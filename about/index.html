@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>about — fakan.cz</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .timeline { list-style: none; padding: 0; }
+    .timeline li {
+      display: grid;
+      grid-template-columns: 4ch 1fr;
+      gap: 1rem;
+      padding: 0.4rem 0.6rem;
+      border-left: 2px solid var(--line);
+      cursor: pointer;
+    }
+    .timeline li:hover { background: rgba(232,181,0,0.08); }
+    .timeline li.active {
+      border-left-color: var(--c-yellow);
+      background: rgba(232,181,0,0.12);
+    }
+    .timeline li b { color: var(--c-orange); }
+    .typewriter { color: var(--c-teal); min-height: 1.55em; }
+  </style>
+</head>
+<body>
+  <nav class="crumbs"><a href="../">~/</a> / about</nav>
+
+  <h1>about/</h1>
+  <p class="typewriter" id="tw"></p>
+
+  <h2>Listy</h2>
+  <ul>
+    <li><a href="bio.md">bio.md</a> — krátké představení</li>
+    <li><a href="hodnoty.md">hodnoty.md</a> — jak pracuju</li>
+    <li><a href="cv.md">cv.md</a> — zkušenosti chronologicky</li>
+  </ul>
+
+  <h2>Timeline (klikni na rok)</h2>
+  <ul class="timeline" id="timeline">
+    <li data-year="teď"><b>teď</b><span>Aseko — Rails + Vue, pool-live ekosystém.</span></li>
+    <li data-year="2024"><b>2024</b><span>Vlastní projekty: fakan, kanban. Migrace osobních věcí na Cloudflare.</span></li>
+    <li data-year="2020"><b>2020</b><span>Plný úvazek na webových aplikacích pro klienty.</span></li>
+    <li data-year="2015"><b>2015</b><span>Větší projekty, Rails jako daily driver.</span></li>
+    <li data-year="2010"><b>2010</b><span>První PHP weby, učení v praxi.</span></li>
+  </ul>
+
+  <footer class="foot">
+    <span>~/about<span class="cursor">_</span></span>
+    <a href="../">zpět na rozcestník</a>
+  </footer>
+
+  <script>
+    (function () {
+      const text = 'Kdo jsem, jak pracuju, kde jsem byl.';
+      const el = document.getElementById('tw');
+      let i = 0;
+      function step() {
+        if (i <= text.length) {
+          el.textContent = text.slice(0, i++);
+          setTimeout(step, 35);
+        }
+      }
+      step();
+
+      const tl = document.getElementById('timeline');
+      tl.addEventListener('click', (e) => {
+        const li = e.target.closest('li');
+        if (!li) return;
+        tl.querySelectorAll('li').forEach(x => x.classList.toggle('active', x === li));
+      });
+    })();
+  </script>
+</body>
+</html>

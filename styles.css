@@ -1,0 +1,199 @@
+:root {
+  color-scheme: light dark;
+
+  /* paleta — 9 barev (light) */
+  --c-red:    #d33b3b;
+  --c-yellow: #e8b500;
+  --c-blue:   #2f5dd6;
+  --c-orange: #db6a1c;
+  --c-green:  #2f9e63;
+  --c-purple: #6b3fc7;
+  --c-pink:   #c93c8a;
+  --c-lime:   #6fa82a;
+  --c-teal:   #1e8a86;
+
+  --bg:    #f7f7f4;
+  --fg:    #15151a;
+  --muted: #6b6b73;
+  --line:  #c8c8c0;
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:    #0f0f12;
+    --fg:    #ececea;
+    --muted: #8a8a90;
+    --line:  #3a3a42;
+
+    --c-red:    #ef5a5a;
+    --c-yellow: #f1c84a;
+    --c-blue:   #6e94f0;
+    --c-orange: #f08a3c;
+    --c-green:  #4abf80;
+    --c-purple: #9b78ea;
+    --c-pink:   #e36aa8;
+    --c-lime:   #9bd14a;
+    --c-teal:   #3eb3ae;
+  }
+}
+
+/* Manuální přepínač má přednost před prefers-color-scheme. */
+html[data-theme="dark"] {
+  --bg:    #0f0f12;
+  --fg:    #ececea;
+  --muted: #8a8a90;
+  --line:  #3a3a42;
+  --c-red:    #ef5a5a;
+  --c-yellow: #f1c84a;
+  --c-blue:   #6e94f0;
+  --c-orange: #f08a3c;
+  --c-green:  #4abf80;
+  --c-purple: #9b78ea;
+  --c-pink:   #e36aa8;
+  --c-lime:   #9bd14a;
+  --c-teal:   #3eb3ae;
+}
+html[data-theme="light"] {
+  --bg:    #f7f7f4;
+  --fg:    #15151a;
+  --muted: #6b6b73;
+  --line:  #c8c8c0;
+  --c-red:    #d33b3b;
+  --c-yellow: #e8b500;
+  --c-blue:   #2f5dd6;
+  --c-orange: #db6a1c;
+  --c-green:  #2f9e63;
+  --c-purple: #6b3fc7;
+  --c-pink:   #c93c8a;
+  --c-lime:   #6fa82a;
+  --c-teal:   #1e8a86;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  padding: 2rem 1.25rem 4rem;
+  max-width: 80ch;
+  margin: 0 auto;
+}
+
+::selection { background: var(--c-yellow); color: #15151a; }
+
+a {
+  color: var(--c-blue);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--c-blue);
+}
+a:hover { background: var(--c-yellow); color: #15151a; border-bottom-color: #15151a; }
+a:focus-visible { outline: 2px solid var(--c-yellow); outline-offset: 2px; }
+
+pre, code {
+  font-family: var(--mono);
+}
+
+pre.ascii {
+  margin: 0;
+  white-space: pre;
+  line-height: 1.1;
+  color: var(--fg);
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  margin: 2rem 0 0.5rem;
+}
+h1 { font-size: 1rem; color: var(--c-red); }
+h2 { font-size: 1rem; color: var(--c-teal); border-top: 1px dashed var(--line); padding-top: 1.25rem; }
+h3 { font-size: 1rem; color: var(--c-purple); }
+
+hr {
+  border: 0;
+  border-top: 1px dashed var(--line);
+  margin: 2rem 0;
+}
+
+ul, ol { padding-left: 1.5rem; }
+li { margin: 0.25rem 0; }
+
+button, input, textarea {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.6rem;
+  border-radius: 2px;
+}
+button { cursor: pointer; }
+button:hover { background: var(--c-yellow); color: #15151a; border-color: #15151a; }
+button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--c-yellow);
+  outline-offset: 1px;
+}
+input, textarea { width: 100%; }
+
+nav.crumbs {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+nav.crumbs a { color: var(--muted); border-bottom-color: var(--muted); }
+
+footer.foot {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.55ch;
+  background: var(--c-yellow);
+  color: transparent;
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 50% { background: transparent; } }
+
+.toast {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--c-green);
+  color: #0f0f12;
+  padding: 0.4rem 0.8rem;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.toast.show { opacity: 1; }
+
+.tag {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-right: 0.25rem;
+}
+.tag.active { background: var(--c-yellow); color: #15151a; border-color: #15151a; }

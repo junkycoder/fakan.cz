@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>fakan.cz — Dan Hromada</title>
+  <meta name="description" content="Osobní web Dana Hromady. Bio, projekty, kontakt, blog." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+<pre class="ascii" aria-label="fakan.cz">
+ ┌─┐┌─┐┬┌─┌─┐┌┐┌  ┌─┐┌─┐
+ ├┤ ├─┤├┴┐├─┤│││  │  │
+ └  ┴ ┴┴ ┴┴ ┴┘└┘ o└─┘└─┘
+</pre>
+    <p>Dan Hromada. Píšu kód, dělám weby, občas něco napíšu.</p>
+  </header>
+
+  <main>
+    <h2>Kde co najdeš</h2>
+<pre class="ascii">
+~/
+├── <a href="about/">about/</a>      kdo jsem, hodnoty, CV
+├── <a href="projects/">projects/</a>   co jsem rozjel
+├── <a href="services/">services/</a>   v čem pomůžu
+├── <a href="contacts/">contacts/</a>   jak mě chytíš
+├── <a href="blog/">blog/</a>       texty, poznámky
+└── <a href="private/">private/</a>    zamčeno
+</pre>
+
+    <h2>Stručně</h2>
+    <p>
+      Vyvíjím v Ruby on Rails a Vue. Dělám na <em>pool-live</em> appkách pro Aseko.
+      Mimo to si stavím vlastní hřiště — mindmap-web <a href="https://github.com/junkycoder/fakan">fakan</a>,
+      kanban, pár dalších drobností. Editoruju ve Vimu, commituju malé a často.
+    </p>
+    <p>
+      Když chceš něco probrat, klidně napiš:
+      <button id="copy-email" type="button" title="Zkopíruj e-mail">hromadadan@gmail.com</button>
+      nebo jdi na <a href="contacts/">kontakty</a>.
+    </p>
+  </main>
+
+  <footer class="foot">
+    <span>~/<span class="cursor">_</span></span>
+    <span>
+      <button id="theme-toggle" type="button" aria-label="Přepni téma">téma: <span id="theme-label">system</span></button>
+    </span>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const label = document.getElementById('theme-label');
+      const stored = localStorage.getItem('theme');
+      if (stored === 'dark' || stored === 'light') {
+        root.setAttribute('data-theme', stored);
+        label.textContent = stored;
+      }
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const cur = root.getAttribute('data-theme');
+        const next = cur === 'dark' ? 'light' : cur === 'light' ? null : 'dark';
+        if (next) { root.setAttribute('data-theme', next); localStorage.setItem('theme', next); label.textContent = next; }
+        else { root.removeAttribute('data-theme'); localStorage.removeItem('theme'); label.textContent = 'system'; }
+      });
+
+      const toast = document.getElementById('toast');
+      function flash(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(flash._t);
+        flash._t = setTimeout(() => toast.classList.remove('show'), 1500);
+      }
+      document.getElementById('copy-email').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText('hromadadan@gmail.com');
+          flash('zkopírováno');
+        } catch {
+          flash('selhalo, zkopíruj ručně');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

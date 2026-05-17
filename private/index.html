@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>private — fakan.cz</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .gate {
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--c-red);
+      padding: 1rem;
+      max-width: 40ch;
+    }
+    .gate label { display: block; margin-bottom: 0.3rem; color: var(--muted); font-size: 0.85rem; }
+    .gate input { margin-bottom: 0.6rem; }
+    .gate .row { display: flex; gap: 0.4rem; }
+    .gate .row button { white-space: nowrap; }
+    .lock { color: var(--c-red); font-weight: 700; }
+    .status { margin-top: 0.6rem; font-size: 0.85rem; color: var(--c-orange); min-height: 1.55em; }
+  </style>
+</head>
+<body>
+  <nav class="crumbs"><a href="../">~/</a> / private</nav>
+
+  <h1><span class="lock">[zamčeno]</span> private/</h1>
+  <p>Tato sekce je soukromá. Obsah uvidíš až po přihlášení.</p>
+
+  <form class="gate" id="gate" autocomplete="off">
+    <label for="pw">heslo</label>
+    <input type="password" id="pw" name="pw" placeholder="••••••••" />
+    <div class="row">
+      <button type="submit">odemknout</button>
+      <button type="button" id="forgot">zapomněl(a) jsem</button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <h2>Co tu má být</h2>
+  <ul>
+    <li>Pracovní deník, který nepatří do veřejného blogu.</li>
+    <li>Šablony klientských dokumentů.</li>
+    <li>Drafty textů, dokud nejsou hotové.</li>
+  </ul>
+
+  <p>Backend zatím není — viz <a href="README.md">README</a>.</p>
+
+  <footer class="foot">
+    <span>~/private<span class="cursor">_</span></span>
+    <a href="../">zpět na rozcestník</a>
+  </footer>
+
+  <script>
+    (function () {
+      const gate = document.getElementById('gate');
+      const status = document.getElementById('status');
+      gate.addEventListener('submit', (e) => {
+        e.preventDefault();
+        status.textContent = 'Backend ještě neběží. Zkus to za týden.';
+      });
+      document.getElementById('forgot').addEventListener('click', () => {
+        status.textContent = 'Napiš na hromadadan@gmail.com — domluvíme se.';
+      });
+    })();
+  </script>
+</body>
+</html>

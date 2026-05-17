@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>contacts — fakan.cz</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .term {
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--c-teal);
+      padding: 0.75rem;
+      background: rgba(30,138,134,0.05);
+    }
+    .term-line { display: flex; gap: 0.5rem; align-items: flex-start; }
+    .term-line .prompt { color: var(--c-teal); font-weight: 700; flex-shrink: 0; }
+    .term-line textarea {
+      border: 0;
+      padding: 0;
+      resize: vertical;
+      min-height: 1.55em;
+      background: transparent;
+    }
+    .term-line textarea:focus-visible { outline: 2px solid var(--c-yellow); outline-offset: 4px; }
+    .hint { color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem; }
+    .channels { list-style: none; padding: 0; }
+    .channels li { padding: 0.35rem 0; }
+    .channels .label { color: var(--c-purple); display: inline-block; min-width: 8ch; }
+  </style>
+</head>
+<body>
+  <nav class="crumbs"><a href="../">~/</a> / contacts</nav>
+
+  <h1>contacts/</h1>
+  <p>Hlavní kanál je e-mail. Napiš téma a stiskni <kbd>Enter</kbd> — otevře se
+     mailový klient s předvyplněným předmětem.</p>
+
+  <div class="term">
+    <div class="term-line">
+      <span class="prompt">mailto:</span>
+      <textarea id="topic" rows="1" placeholder="o čem chceš mluvit?" autofocus></textarea>
+    </div>
+    <p class="hint">Shift+Enter = nový řádek (přejde do těla mailu).
+       Enter = odeslat do mailového klienta.</p>
+  </div>
+
+  <h2>Kanály</h2>
+  <ul class="channels">
+    <li><span class="label">e-mail</span> <a href="mailto:hromadadan@gmail.com">hromadadan@gmail.com</a> · <a href="email.md">detail</a></li>
+    <li><span class="label">github</span> <a href="https://github.com/junkycoder">github.com/junkycoder</a> · <a href="github.md">detail</a></li>
+    <li><span class="label">ostatní</span> <a href="ostatni.md">kde jinde jsem (a kde nejsem)</a></li>
+  </ul>
+
+  <footer class="foot">
+    <span>~/contacts<span class="cursor">_</span></span>
+    <a href="../">zpět na rozcestník</a>
+  </footer>
+
+  <script>
+    (function () {
+      const ta = document.getElementById('topic');
+      ta.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          const v = ta.value.trim();
+          const lines = v.split('\n');
+          const subject = lines.shift() || '';
+          const body = lines.join('\n').trim();
+          const url = 'mailto:hromadadan@gmail.com'
+            + (subject ? '?subject=' + encodeURIComponent(subject) : '')
+            + (body ? (subject ? '&' : '?') + 'body=' + encodeURIComponent(body) : '');
+          window.location.href = url;
+        }
+      });
+      ta.addEventListener('input', () => {
+        ta.style.height = 'auto';
+        ta.style.height = ta.scrollHeight + 'px';
+      });
+    })();
+  </script>
+</body>
+</html>

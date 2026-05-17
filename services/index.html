@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>services — fakan.cz</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    details {
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--c-green);
+      padding: 0.5rem 0.9rem;
+      margin: 0.6rem 0;
+    }
+    details[open] { border-left-color: var(--c-orange); }
+    summary { cursor: pointer; font-weight: 700; padding: 0.25rem 0; }
+    summary:focus-visible { outline: 2px solid var(--c-yellow); outline-offset: 1px; }
+    details p { margin: 0.5rem 0; }
+    details ul { margin: 0.5rem 0; }
+    .price { color: var(--c-orange); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <nav class="crumbs"><a href="../">~/</a> / services</nav>
+
+  <h1>services/</h1>
+  <p>V čem můžu být užitečný. Rozklikni, co tě zajímá.</p>
+
+  <details open>
+    <summary>Konzultace <span class="price">— 1 200 Kč/h</span></summary>
+    <p>Krátký rozhovor, code review, druhý názor na architekturu. Hodina-dvě,
+       řešíme konkrétní problém.</p>
+    <p>První 15 minut zdarma. <a href="konzultace.md">detail →</a></p>
+  </details>
+
+  <details>
+    <summary>Vývoj na zakázku <span class="price">— 1 100 Kč/h</span></summary>
+    <p>Delší angažmá. Webové aplikace v Rails + Vue, nebo drobné nástroje
+       na Cloudflare Workers. Iteracemi, denní commity, demo URL.</p>
+    <p>Min. půl dne. Paušál po dohodě. <a href="spoluprace.md">detail →</a></p>
+  </details>
+
+  <details>
+    <summary>Co nedělám</summary>
+    <ul>
+      <li>Wordpress, Shopify, Webflow.</li>
+      <li>Mobilní native (Swift, Kotlin).</li>
+      <li>SEO „audity" generované AI šablonou.</li>
+    </ul>
+    <p>Když je tohle to pravé, najdi někoho jiného — bude mu to bavit víc.</p>
+  </details>
+
+  <details>
+    <summary>Ceník detail</summary>
+    <p>Sazby, fakturace, DPH (nejsem plátce). <a href="cenik.md">otevřít cenik.md →</a></p>
+  </details>
+
+  <h2>Začni</h2>
+  <p>Napiš na <a href="../contacts/email.md">e-mail</a> co řešíš (3 věty stačí).
+     Ozvu se do druhého dne.</p>
+
+  <footer class="foot">
+    <span>~/services<span class="cursor">_</span></span>
+    <a href="../">zpět na rozcestník</a>
+  </footer>
+</body>
+</html>

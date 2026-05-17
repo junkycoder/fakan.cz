@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>blog — fakan.cz</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .filter-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 1rem 0; }
+    ul.posts { list-style: none; padding: 0; }
+    ul.posts li {
+      padding: 0.5rem 0.6rem;
+      border-left: 2px solid var(--line);
+      margin: 0.4rem 0;
+    }
+    ul.posts li.hidden { display: none; }
+    .date { color: var(--muted); display: inline-block; min-width: 12ch; }
+    .post-tags { color: var(--muted); font-size: 0.8rem; margin-left: 0.5rem; }
+    .empty { color: var(--muted); font-style: italic; }
+  </style>
+</head>
+<body>
+  <nav class="crumbs"><a href="../">~/</a> / blog</nav>
+
+  <h1>blog/</h1>
+  <p>Bez rozvrhu, bez slibů. Když mám co říct, napíšu.</p>
+
+  <div class="filter-row" id="filters">
+    <button class="tag active" data-tag="all">vše</button>
+    <!-- tlačítka pro tagy se dogenerují JS -->
+  </div>
+
+  <ul class="posts" id="posts"></ul>
+  <p class="empty" id="empty" hidden>Žádný post pro tenhle filtr.</p>
+
+  <footer class="foot">
+    <span>~/blog<span class="cursor">_</span></span>
+    <a href="../">zpět na rozcestník</a>
+  </footer>
+
+  <script>
+    (function () {
+      const posts = [
+        {
+          date: '2026-05-17',
+          title: 'Proč tahle stránka existuje',
+          href: '2026-05-prvni-zaznam.md',
+          tags: ['meta', 'web']
+        }
+        // Další posty přidávej sem. Newest first.
+      ];
+
+      const ul = document.getElementById('posts');
+      const filters = document.getElementById('filters');
+      const empty = document.getElementById('empty');
+
+      // Render postů
+      posts.forEach(p => {
+        const li = document.createElement('li');
+        li.dataset.tags = p.tags.join(',');
+        li.innerHTML = `<span class="date">${p.date}</span> <a href="${p.href}">${p.title}</a><span class="post-tags">${p.tags.map(t => '#' + t).join(' ')}</span>`;
+        ul.appendChild(li);
+      });
+
+      // Dogenerování tag tlačítek
+      const allTags = [...new Set(posts.flatMap(p => p.tags))].sort();
+      allTags.forEach(t => {
+        const b = document.createElement('button');
+        b.className = 'tag';
+        b.dataset.tag = t;
+        b.textContent = t;
+        filters.appendChild(b);
+      });
+
+      filters.addEventListener('click', (e) => {
+        const btn = e.target.closest('button.tag');
+        if (!btn) return;
+        filters.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+        const tag = btn.dataset.tag;
+        let shown = 0;
+        ul.querySelectorAll('li').forEach(li => {
+          const tags = (li.dataset.tags || '').split(',');
+          const hide = tag !== 'all' && !tags.includes(tag);
+          li.classList.toggle('hidden', hide);
+          if (!hide) shown++;
+        });
+        empty.hidden = shown > 0;
+      });
+    })();
+  </script>
+</body>
+</html>

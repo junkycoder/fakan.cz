@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>projects — fakan.cz</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .filter-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 1rem 0; }
+    .grid { display: grid; gap: 1rem; }
+    article.card {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--c-purple);
+    }
+    article.card h3 { margin: 0 0 0.25rem; }
+    article.card p { margin: 0.25rem 0; color: var(--muted); }
+    article.card.hidden { display: none; }
+    .meta { font-size: 0.8rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <nav class="crumbs"><a href="../">~/</a> / projects</nav>
+
+  <h1>projects/</h1>
+  <p>Co jsem rozjel. Filtruj podle tagu, nebo si přečti <code>.md</code> přímo.</p>
+
+  <div class="filter-row" id="filters">
+    <button class="tag active" data-tag="all">vše</button>
+    <button class="tag" data-tag="web">web</button>
+    <button class="tag" data-tag="tool">tool</button>
+    <button class="tag" data-tag="hra">hra</button>
+    <button class="tag" data-tag="experiment">experiment</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <article class="card" data-tags="web,osobni,hraci">
+      <h3><a href="fakan.md">fakan</a></h3>
+      <p>Osobní web jako mindmapa. Vanilla JS, ASCII grid, žádný build.</p>
+      <p class="meta">tags: web, osobni · <a href="https://github.com/junkycoder/fakan">github</a></p>
+    </article>
+    <article class="card" data-tags="tool,productivity,web">
+      <h3><a href="kanban.md">kanban</a></h3>
+      <p>Vlastní kanban pro denní práci. Workers + D1, vanilla front.</p>
+      <p class="meta">tags: tool, web</p>
+    </article>
+    <article class="card" data-tags="experiment,web,hra">
+      <h3><a href="prsi-slysim.md">prsi-slysim</a></h3>
+      <p>Drobnost stranou.</p>
+      <p class="meta">tags: experiment, hra</p>
+    </article>
+  </div>
+
+  <footer class="foot">
+    <span>~/projects<span class="cursor">_</span></span>
+    <a href="../">zpět na rozcestník</a>
+  </footer>
+
+  <script>
+    (function () {
+      const filters = document.getElementById('filters');
+      const cards = document.querySelectorAll('#grid .card');
+      filters.addEventListener('click', (e) => {
+        const btn = e.target.closest('button.tag');
+        if (!btn) return;
+        filters.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+        const tag = btn.dataset.tag;
+        cards.forEach(c => {
+          const tags = (c.dataset.tags || '').split(',').map(s => s.trim());
+          c.classList.toggle('hidden', tag !== 'all' && !tags.includes(tag));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
