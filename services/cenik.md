@@ -9,13 +9,13 @@ Orientační. Detaily vždycky podle zadání.
 
 ## Konzultace
 
-- **1 200 Kč / hodina** — krátký rozhovor, code review, druhý názor.
+- **1 500 Kč / hodina** — krátký rozhovor, code review, druhý názor.
 - Min. 1 hodina, fakturuje se po skončení.
 - První 15 minut zdarma, abychom si ověřili, že dává smysl jet dál.
 
 ## Vývoj na zakázku
 
-- **1 100 Kč / hodina** — práce na hodiny, vykazuju transparentně.
+- **1 500 Kč / hodina** — práce na hodiny, vykazuju transparentně.
 - **Paušál po dohodě** — pokud projekt jede několik měsíců, paušál bývá
   výhodnější pro obě strany.
 - Min. fakturace půl dne (4 h).
