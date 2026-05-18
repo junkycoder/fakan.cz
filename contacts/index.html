@@ -46,8 +46,8 @@
 
   <h2>Kanály</h2>
   <ul class="channels">
-    <li><span class="label">e-mail</span> <a href="mailto:hromada.dan@gmail.com">hromada.dan@gmail.com</a> · <a href="email.md">detail</a></li>
-    <li><span class="label">github</span> <a href="https://github.com/junkycoder">github.com/junkycoder</a></li>
+    <li><span class="label">e-mail</span> <a href="mailto:hromadadan@gmail.com">hromadadan@gmail.com</a> · <a href="email.md">detail</a></li>
+    <li><span class="label">github</span> <a href="https://github.com/junkycoder">github.com/junkycoder</a> · <a href="github.md">detail</a></li>
     <li><span class="label">ostatní</span> <a href="ostatni.md">kde jinde jsem (a kde nejsem)</a></li>
   </ul>
 
@@ -66,7 +66,7 @@
           const lines = v.split('\n');
           const subject = lines.shift() || '';
           const body = lines.join('\n').trim();
-          const url = 'mailto:hromada.dan@gmail.com'
+          const url = 'mailto:hromadadan@gmail.com'
             + (subject ? '?subject=' + encodeURIComponent(subject) : '')
             + (body ? (subject ? '&' : '?') + 'body=' + encodeURIComponent(body) : '');
           window.location.href = url;

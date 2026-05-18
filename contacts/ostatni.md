@@ -8,7 +8,7 @@ slug: ostatni
 ## Kde jsem
 
 - **E-mail** — viz [email.md](email.md). Hlavní kanál.
-- **GitHub** — [github.com/junkycoder](https://github.com/junkycoder). Kód a issues.
+- **GitHub** — viz [github.md](github.md). Kód a issues.
 
 ## Kde nejsem
 
