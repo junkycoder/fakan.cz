@@ -16,11 +16,11 @@ slug: email
   - Termín, dokdy to musí být hotové.
   - Rozpočet, nebo aspoň řád (deset tisíc / sto tisíc / víc).
 
-Pomůže to obě strany zbavit zbytečných kolečk.
+Pomůže to obě strany zbavit zbytečných koleček.
 
 ## Co nepiš
 
-- Cold sales pitche na agenturní služby, šablonové „spolupráce".
-- AI-generované „mám pro vás partnership opportunity".
+- Cold sales pitche na agenturní služby, šablonové „spolupráce“.
+- AI-generované „mám pro vás partnership opportunity“.
 
 Tohle filtr zachytí. Pokud máš opravdu dobrou nabídku, napiš to lidsky.

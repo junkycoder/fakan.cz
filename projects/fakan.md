@@ -21,6 +21,6 @@ obsah si přečteš jako statický web (otevři `index.html`) nebo jako mindmapu
 
 ## Proč dvě UI nad stejným obsahem
 
-Lineární web čte návštěvník, kterému poslal jsem odkaz. Mindmap čtu já, když
+Lineární web čte návštěvník, kterému jsem poslal odkaz. Mindmap čtu já, když
 hledám něco vlastního a chci to mít po ruce jako celek. Stejné `.md` soubory,
 dvě UI, jeden zdroj pravdy.

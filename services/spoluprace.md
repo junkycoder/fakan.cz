@@ -22,10 +22,10 @@ od návrhu po nasazení.
 
 ## Co nedělám
 
-- Wordpress, Shopify, Webflow. Když je tohle to pravé, najmi někoho jiného —
-  bude mu to bavit víc než mně.
+- WordPress, Shopify, Webflow. Když je tohle to pravé, najmi někoho jiného —
+  bude ho to bavit víc než mě.
 - Mobilní native (Swift, Kotlin). Capacitor ano, čistý Swift ne.
-- Přepis legacy PHP/Wordpress jen pro přepis. Když to funguje a vydělává, nech
+- Přepis legacy PHP/WordPress jen pro přepis. Když to funguje a vydělává, nech
   to být.
 
 ## Jak to probíhá

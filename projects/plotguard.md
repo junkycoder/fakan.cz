@@ -17,7 +17,7 @@ pastvinách bez plotu.
 
 Existující řešení jezdí na **měsíčním předplatném za obojek**. Pro hobby chovatele
 s deseti kozami je to ekonomicky mimo. PlotGuard má jít cestou „kup železo,
-provoz tě nestojí měsíčně nic" — payload je malý, infra levná, Cloudflare backend
+provoz tě nestojí měsíčně nic“ — payload je malý, infra levná, Cloudflare backend
 zvládne celé Česko za pár dolarů měsíčně.
 
 ## Co je zatím hotové

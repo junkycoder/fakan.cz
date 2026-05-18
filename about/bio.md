@@ -14,7 +14,7 @@ postavím i Vue, React nebo Next — ale nejde to ze mě cítit jako nadšení, 
 nutnost.
 
 Mám rád věci, které vlastním. Vlastní soubory v gitu, vlastní doménu, vlastní e-mail.
-Nemám rád vendor lock-in, „moderní řešení" bez vysvětlení a TODO appky, které jsou
+Nemám rád vendor lock-in, „moderní řešení“ bez vysvětlení a TODO appky, které jsou
 ve skutečnosti operační systém.
 
 Když se chceš na něco zeptat, mrkni na [kontakty](../contacts/).

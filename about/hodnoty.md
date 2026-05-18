@@ -32,9 +32,9 @@ toho, abych měl pondělní rituál na aktualizaci 47 NPM balíčků.
 ## Stručnost
 
 Krátké věty. Žádná marketingová klišé. Když ti něco vysvětluju a používám
-slovo "synergie", máš plné právo zavřít okno.
+slovo „synergie“, máš plné právo zavřít okno.
 
 ## Vlastní nástroje místo bloatu
 
 Spíš si napíšu sto řádků JS, než přidám knihovnu na 2 MB. Není to dogma —
-když knihovna ušetří týden, beru ji. Ale default je „nezatěžovat".
+když knihovna ušetří týden, beru ji. Ale default je „nezatěžovat“.

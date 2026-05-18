@@ -7,7 +7,7 @@ tags: ai, email, cloudflare, claude
 # AI email agenti
 
 Pět specializovaných agentů, kteří se pohybují v mojí schránce. Místo jednoho
-gigantického „dělej všechno" prompta mám pět menších, každý s úzkým záběrem.
+gigantického „dělej všechno“ prompta mám pět menších, každý s úzkým záběrem.
 
 ## Architektura
 

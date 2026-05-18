@@ -9,9 +9,9 @@ access: locked
 Zamčená sekce. Obsah se ukáže až po přihlášení.
 
 Backend, který tu autentizaci řeší, zatím není — `index.html` je placeholder,
-který vždycky vrátí „backend ještě neběží". Až přijde Cloudflare Worker
+který vždycky vrátí „backend ještě neběží“. Až přijde Cloudflare Worker
 (viz roadmapa mindmap [fakan/README.md](https://github.com/junkycoder/fakan/blob/main/README.md)
-sekce „Backend"), tahle složka se rozsvítí.
+sekce „Backend“), tahle složka se rozsvítí.
 
 ## Co tu má být
 

@@ -26,7 +26,7 @@ Klikneš na e-mail, máš session v KV.
 ## Co umí, co jiní neumí
 
 - **Fractional indexing** kartiček — drag&drop nikdy nepřeskládá víc než dvě
-  sousední karty. Žádné „přepočítat všechny pořadí" při každém přesunu.
+  sousední karty. Žádné „přepočítat všechny pořadí“ při každém přesunu.
 - Přílohy přímo v R2, ne v třetí službě.
 - Multi-board, sdílení boardů na link.
 
