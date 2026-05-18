@@ -66,7 +66,7 @@
     <h2>kontakt</h2>
     <p>
       E-mail. Kdo chce, najde:
-      <button id="copy-email" type="button" title="Zkopíruj e-mail">hromadadan@gmail.com</button>
+      <button id="copy-email" type="button" title="Zkopíruj e-mail">hromada.dan@gmail.com</button>
       nebo jdi na <a href="contacts/">kontakty</a>.
     </p>
   </main>
@@ -105,7 +105,7 @@
       }
       document.getElementById('copy-email').addEventListener('click', async () => {
         try {
-          await navigator.clipboard.writeText('hromadadan@gmail.com');
+          await navigator.clipboard.writeText('hromada.dan@gmail.com');
           flash('zkopírováno');
         } catch {
           flash('selhalo, zkopíruj ručně');

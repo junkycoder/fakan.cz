@@ -5,7 +5,7 @@ slug: email
 
 # E-mail
 
-[hromadadan@gmail.com](mailto:hromadadan@gmail.com)
+[hromada.dan@gmail.com](mailto:hromada.dan@gmail.com)
 
 ## Co očekávat
 
