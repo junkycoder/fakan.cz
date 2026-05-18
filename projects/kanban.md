@@ -1,20 +1,36 @@
 ---
 title: kanban
 slug: kanban
-tags: tool, productivity, web
+tags: tool, productivity, web, cloudflare
 ---
 
 # kanban
 
 Vlastní kanban pro denní práci. Vznikl proto, že žádný hotový mi neseděl —
-Trello je moc kliky, Linear moc opinionated, Jira je Jira.
+Trello je moc kliků, Linear moc opinionated, Jira je Jira.
 
-- **Stack**: Cloudflare Workers + D1 (SQLite na okraji sítě), front vanilla.
-- **Auth**: dev-login lokálně, na produkci jednoduché session přes cookie.
-- **Stav**: používám denně. Pár drobností v backlogu, ale core dělá to,
-  co potřebuju.
+Veřejně na **[kanban.fakan.cz](https://kanban.fakan.cz)**.
 
-## Proč to není veřejný produkt
+## Stack
 
-Protože je to tool, který si držím těsně u sebe. Kdyby zájem byl, můžu
-hostovanou verzi pustit — ozvi se přes [kontakty](../contacts/).
+- **Cloudflare Workers + D1** — SQLite na okraji sítě, žádný vlastní server.
+- **R2** — přílohy ke kartám, jeden bucket, signed URLs.
+- **KV** — sessions.
+- **Front** — vanilla JS, žádný framework, žádný build.
+
+## Auth
+
+Magic linky přes Resend. Žádné heslo, žádný OAuth provider mezi tebou a kanbanem.
+Klikneš na e-mail, máš session v KV.
+
+## Co umí, co jiní neumí
+
+- **Fractional indexing** kartiček — drag&drop nikdy nepřeskládá víc než dvě
+  sousední karty. Žádné „přepočítat všechny pořadí" při každém přesunu.
+- Přílohy přímo v R2, ne v třetí službě.
+- Multi-board, sdílení boardů na link.
+
+## Stav
+
+Používám denně. Pár drobností v backlogu, ale core dělá to, co potřebuju.
+Pokud se chceš podívat zevnitř, [napiš](../contacts/email.md) — pošlu invite.

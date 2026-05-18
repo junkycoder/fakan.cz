@@ -1,26 +1,26 @@
 ---
-title: fakan
+title: fakan (renderer)
 slug: fakan
-tags: web, osobni, hraci
+tags: web, infra
 ---
 
-# fakan
+# fakan (renderer)
 
-Osobní web jako mindmapa. Místo stránek strom, kterým se chodí do čtyř stran.
-Listy jsou `.md` soubory s frontmatterem. Větve půjde sdílet, zamknout
-a zpoplatnit.
+fakan není projekt, který tu žije — je to **renderer**. Mindmap-styled web, který
+si vsadí kazetu (`.md` soubory s frontmatterem) a vykreslí ji jako prolézatelný
+ASCII strom. Chodí se po něm šipkami, panely jsou listy `.md`.
 
+Tenhle repo (`fakan.cz`) je jedna z kazet — kanonická, moje vlastní. Stejný
+obsah si přečteš jako statický web (otevři `index.html`) nebo jako mindmapu
+(otevři fakan a nasměruj ho sem).
+
+- **Repo rendereru**: [github.com/junkycoder/fakan](https://github.com/junkycoder/fakan)
 - **Stack**: vanilla JS (ES modules), `<pre>` ASCII grid, Python skript na
   generování `tree.json` z adresářové struktury. Žádný build.
 - **Hosting**: Cloudflare Pages.
-- **Repo**: [github.com/junkycoder/fakan](https://github.com/junkycoder/fakan).
 
-## Stav
+## Proč dvě UI nad stejným obsahem
 
-Funguje navigace, panely, klávesnice, dark mode. Backend (sdílení, paywall,
-custom domény) je rozpracovaný — Cloudflare Worker je v roadmapě.
-
-## Proč
-
-Chtěl jsem jednu homepage, kde se schází profil, texty, projekty a denní
-práce. Bez Wordpressu, bez Notion, bez témat. Otevírám si to jako homepage.
+Lineární web čte návštěvník, kterému poslal jsem odkaz. Mindmap čtu já, když
+hledám něco vlastního a chci to mít po ruce jako celek. Stejné `.md` soubory,
+dvě UI, jeden zdroj pravdy.

@@ -20,8 +20,14 @@ nejde otestovat za pět minut, je to špatně rozdělené.
 
 ## Klávesnice první
 
-Když musím sáhnout na myš, něco nefunguje. Platí to pro editor, pro web,
-pro telefon. Hotkeys nejsou luxus.
+Když musím sáhnout na myš, něco nefunguje. Platí to pro editor, pro web, pro
+admin rozhraní vlastních appek. Hotkeys nejsou luxus.
+
+## Bez upgrade hellu
+
+Provoz musí být levný a věc nesmí jít za půl roku do koše kvůli tomu, že někdo
+vydal major verzi frameworku. Vybírám stack tak, aby šlapal i za pět let bez
+toho, abych měl pondělní rituál na aktualizaci 47 NPM balíčků.
 
 ## Stručnost
 
@@ -30,6 +36,5 @@ slovo "synergie", máš plné právo zavřít okno.
 
 ## Vlastní nástroje místo bloatu
 
-Spíš si napíšu sto řádků JS, než přidám knihovnu na 2 MB. Spíš Vim než VS Code.
-Není to dogma — když knihovna ušetří týden, beru ji. Ale default je
-"nezatěžovat".
+Spíš si napíšu sto řádků JS, než přidám knihovnu na 2 MB. Není to dogma —
+když knihovna ušetří týden, beru ji. Ale default je „nezatěžovat".

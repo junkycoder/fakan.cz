@@ -23,31 +23,42 @@
   <nav class="crumbs"><a href="../">~/</a> / projects</nav>
 
   <h1>projects/</h1>
-  <p>Co jsem rozjel. Filtruj podle tagu, nebo si přečti <code>.md</code> přímo.</p>
+  <p>Co stavíme. Část veřejně, část pod NDA — co tu není, to nejspíš nebudu komentovat.</p>
 
   <div class="filter-row" id="filters">
     <button class="tag active" data-tag="all">vše</button>
-    <button class="tag" data-tag="web">web</button>
+    <button class="tag" data-tag="cloudflare">cloudflare</button>
     <button class="tag" data-tag="tool">tool</button>
-    <button class="tag" data-tag="hra">hra</button>
-    <button class="tag" data-tag="experiment">experiment</button>
+    <button class="tag" data-tag="ai">ai</button>
+    <button class="tag" data-tag="hardware">hardware</button>
+    <button class="tag" data-tag="b2b">b2b</button>
   </div>
 
   <div class="grid" id="grid">
-    <article class="card" data-tags="web,osobni,hraci">
-      <h3><a href="fakan.md">fakan</a></h3>
-      <p>Osobní web jako mindmapa. Vanilla JS, ASCII grid, žádný build.</p>
-      <p class="meta">tags: web, osobni · <a href="https://github.com/junkycoder/fakan">github</a></p>
-    </article>
-    <article class="card" data-tags="tool,productivity,web">
+    <article class="card" data-tags="tool,productivity,web,cloudflare">
       <h3><a href="kanban.md">kanban</a></h3>
-      <p>Vlastní kanban pro denní práci. Workers + D1, vanilla front.</p>
-      <p class="meta">tags: tool, web</p>
+      <p>Magic link auth, fractional indexing, R2 přílohy. Workers + D1, vanilla front.</p>
+      <p class="meta">tags: tool, cloudflare · <a href="https://kanban.fakan.cz">kanban.fakan.cz</a></p>
     </article>
-    <article class="card" data-tags="experiment,web,hra">
-      <h3><a href="prsi-slysim.md">prsi-slysim</a></h3>
-      <p>Drobnost stranou.</p>
-      <p class="meta">tags: experiment, hra</p>
+    <article class="card" data-tags="hardware,iot,draft">
+      <h3><a href="plotguard.md">PlotGuard</a></h3>
+      <p>Virtuální plot pro hospodářská zvířata. Bez měsíčního předplatného. Draft.</p>
+      <p class="meta">tags: hardware, iot · draft</p>
+    </article>
+    <article class="card" data-tags="ai,email,cloudflare,claude">
+      <h3><a href="ai-email-agenti.md">AI email agenti</a></h3>
+      <p>Pět agentů orchestrovaných přes Cloudflare Email Routing + Workers + Claude API.</p>
+      <p class="meta">tags: ai, cloudflare</p>
+    </article>
+    <article class="card" data-tags="b2b,crm,ats,cloudflare">
+      <h3><a href="crm-ats.md">CRM/ATS pro mBlue</a></h3>
+      <p>Devět modulů, 80+ tasků, napojení na ARES. Vlastní nástroj místo Recruitee a spol.</p>
+      <p class="meta">tags: b2b, cloudflare</p>
+    </article>
+    <article class="card" data-tags="web,infra">
+      <h3><a href="fakan.md">fakan (renderer)</a></h3>
+      <p>Mindmap renderer, který si vsadí tenhle repo jako kazetu. Vanilla JS, ASCII grid.</p>
+      <p class="meta">tags: web, infra · <a href="https://github.com/junkycoder/fakan">github</a></p>
     </article>
   </div>
 

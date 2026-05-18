@@ -9,34 +9,33 @@ Stručná chronologie. Detaily na vyžádání.
 
 ## Teď
 
-**Aseko / ACS** — Ruby on Rails + Vue.js. Pracuju na řadě aplikací kolem
-správy bazénové techniky:
-
-- `pool-live-front` — webové rozhraní pro správce bazénů
-- `pool-live-mobile` — mobilní appka pro koncové uživatele
-- `remote-mobile` — vzdálená správa zařízení
-
-Stack: Rails (backend, API), Vue 3 + TypeScript (front i mobile), PostgreSQL,
-WebSocket pro realtime data ze zařízení.
+Vedu malý vývojářský tým. Default stack Cloudflare — Workers, D1, KV, R2, Durable
+Objects, Queues. Mobil přes Capacitor, front vanilla. Část kapacity jde do vlastních
+produktů, část do zakázek pro klienty, kteří chtějí, aby to běželo levně a šlapalo to
+i bez nás.
 
 ## Vlastní projekty
 
-- **[fakan](../projects/fakan.md)** — osobní web jako mindmapa, generovaná
-  z adresářové struktury. Žádný build, žádný framework.
-- **[kanban](../projects/kanban.md)** — vlastní kanban pro denní práci.
-- **[prsi-slysim](../projects/prsi-slysim.md)** — drobnost stranou.
+- **[kanban](../projects/kanban.md)** — kanban s magic link auth, fractional indexing
+  kartiček a přílohami v R2. Veřejně na [kanban.fakan.cz](https://kanban.fakan.cz).
+- **[PlotGuard](../projects/plotguard.md)** — virtuální plot pro hospodářská zvířata.
+  Zatím draft.
+- **[AI email agenti](../projects/ai-email-agenti.md)** — pět agentů orchestrovaných
+  přes Cloudflare Email Routing + Workers + Claude API.
+- **[CRM/ATS pro mBlue](../projects/crm-ats.md)** — devět modulů, 80+ tasků,
+  napojení na ARES.
 
 ## Nástroje
 
-- Vim 9.1 (native packages, ne Neovim)
-- Tmux
 - Git, GitHub
-- Cloudflare (Pages, Workers, R2)
-- macOS jako daily driver, Linux na serverech
+- Cloudflare (Workers, D1, KV, R2, Durable Objects, Queues, Pages, Email Routing)
+- Capacitor pro mobil
+- macOS jako daily driver, Linux na serverech (kterých moc nemám, viz Cloudflare)
 
 ## Před
 
-Web a aplikace pro různé klienty. Frontend, backend, návrh databází,
-deploye, drobný devops. Sám i v menších týmech.
+Web a aplikace pro různé klienty. Frontend, backend, návrh databází, deploye, drobný
+devops. Sám i v menších týmech. Prošel jsem si i Rails + Vue světem — vím, kde to
+sedí a kde radši ne.
 
 Pokud potřebuješ konkrétní reference, ozvi se přes [kontakty](../contacts/email.md).

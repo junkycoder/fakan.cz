@@ -9,11 +9,13 @@ slug: github
 
 ## Co tam najdeš
 
-- **[fakan](https://github.com/junkycoder/fakan)** — mindmap web, hlavní
-  veřejný projekt.
-- **[fakan.cz](https://github.com/junkycoder/fakan.cz)** — tenhle obsahový
-  repo.
+- **[fakan](https://github.com/junkycoder/fakan)** — mindmap renderer.
+- **[fakan.cz](https://github.com/junkycoder/fakan.cz)** — tenhle repo
+  (kazeta — obsah pro renderer i statický web).
 - Pár experimentů a forků.
+
+Produktové repa (kanban, PlotGuard, CRM/ATS, AI email agenti) jsou privátní.
+Když si potřebuješ něco ověřit, [napiš](email.md) — řešíme adresně.
 
 ## Issue / PR
 

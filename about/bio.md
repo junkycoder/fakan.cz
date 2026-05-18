@@ -5,18 +5,16 @@ slug: bio
 
 # Bio
 
-Jmenuju se Dan Hromada. Píšu kód v Ruby on Rails a ve Vue, a tu a tam něco
-napíšu i česky.
+Jmenuju se Dan Hromada. Vývojář ze středočeské vesnice — konkrétně z Týnce nad
+Sázavou. Stavím serverless věci na Cloudflare a vedu malý tým, který to umí.
 
-Hlavní práce je teď pro Aseko — pool-live mobilní a web aplikace pro správu
-bazénové techniky. Mezitím si stavím vlastní hřiště: mindmap-web
-[fakan](https://github.com/junkycoder/fakan), kanban a další drobnosti.
+Default stack: Workers, D1, KV, R2, Durable Objects, Queues. Mobil přes Capacitor.
+Frontend píšu v pure JS a CSS, bez frameworku a bez build stepu. Když projekt platí,
+postavím i Vue, React nebo Next — ale nejde to ze mě cítit jako nadšení, spíš jako
+nutnost.
 
-Mám rád věci, které vlastním. Vlastní soubory v gitu, vlastní doménu,
-vlastní e-mail. Nemám rád vendor lock-in, "moderní řešení" bez vysvětlení
-a TODO appky, které jsou ve skutečnosti operační systém.
-
-Editor: Vim 9.1 s nativními packages. Terminál + tmux. Jeden notebook,
-jedna klávesnice.
+Mám rád věci, které vlastním. Vlastní soubory v gitu, vlastní doménu, vlastní e-mail.
+Nemám rád vendor lock-in, „moderní řešení" bez vysvětlení a TODO appky, které jsou
+ve skutečnosti operační systém.
 
 Když se chceš na něco zeptat, mrkni na [kontakty](../contacts/).

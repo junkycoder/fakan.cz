@@ -10,8 +10,8 @@ problém. Nepotřebuju dlouhý onboarding.
 
 ## Kdy se hodím
 
-- Stojíš nad volbou architektury (Rails, Vue, Workers) a chceš druhý
-  pohled.
+- Stojíš nad volbou architektury (Workers, D1, KV — serverless obecně) a chceš
+  druhý pohled.
 - Máš code review, na kterou nikdo z týmu nemá kapacitu.
 - Chceš si projít konkrétní část kódu a vědět, co s ní.
 - Plánuješ refactor a chceš ho rozdělit do iterací, které nerozbijou prod.

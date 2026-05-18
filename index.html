@@ -2,9 +2,9 @@
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>fakan.cz — Dan Hromada</title>
-  <meta name="description" content="Osobní web Dana Hromady. Bio, projekty, kontakt, blog." />
+  <meta name="description" content="Dan Hromada — vývojář, serverless Cloudflare, malý tým, Týnec nad Sázavou." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,7 +14,7 @@
  ├┤ ├─┤├┴┐├─┤│││  │  │
  └  ┴ ┴┴ ┴┴ ┴┘└┘ o└─┘└─┘
 </pre>
-    <p>Dan Hromada. Píšu kód, dělám weby, občas něco napíšu.</p>
+    <p>Vývojář ze středočeské vesnice. Stavím věci tak, aby šlapaly i za pět let bez aktualizace 47 NPM balíčků.</p>
   </header>
 
   <main>
@@ -22,21 +22,50 @@
 <pre class="ascii">
 ~/
 ├── <a href="about/">about/</a>      kdo jsem, hodnoty, CV
-├── <a href="projects/">projects/</a>   co jsem rozjel
+├── <a href="projects/">projects/</a>   co stavím
 ├── <a href="services/">services/</a>   v čem pomůžu
 ├── <a href="contacts/">contacts/</a>   jak mě chytíš
 ├── <a href="blog/">blog/</a>       texty, poznámky
 └── <a href="private/">private/</a>    zamčeno
 </pre>
 
-    <h2>Stručně</h2>
+    <h2>stack</h2>
     <p>
-      Vyvíjím v Ruby on Rails a Vue. Dělám na <em>pool-live</em> appkách pro Aseko.
-      Mimo to si stavím vlastní hřiště — mindmap-web <a href="https://github.com/junkycoder/fakan">fakan</a>,
-      kanban, pár dalších drobností. Editoruju ve Vimu, commituju malé a často.
+      Serverless. Cloudflare od A do Z — Workers, D1, KV, R2, Durable Objects, Queues.
+      Mobil přes Capacitor. Frontend píšu v pure JS a CSS. Bez frameworku, bez build stepu,
+      bez <code>node_modules</code> o velikosti dokumentárního filmu.
+    </p>
+    <p>Vue, React, Next? Když platí, postavím to. Nečekej u toho ale nadšení.</p>
+
+    <h2>co stavím</h2>
+    <ul>
+      <li><strong><a href="https://kanban.fakan.cz">kanban.fakan.cz</a></strong> — kanban s magic link auth, fractional indexing kartiček, přílohy v R2</li>
+      <li><strong><a href="projects/plotguard.md">PlotGuard</a></strong> — virtuální plot pro hospodářská zvířata. Bez měsíčního předplatného, na rozdíl od konkurence</li>
+      <li><strong><a href="projects/ai-email-agenti.md">AI email agenti</a></strong> — pět specializovaných agentů orchestrovaných přes Cloudflare Email Routing + Workers + Claude API</li>
+      <li><strong><a href="projects/crm-ats.md">CRM/ATS pro mBlue</a></strong> — devět modulů, 80+ tasků, napojení na ARES</li>
+      <li>pár dalších věcí, které radši nelinkuju</li>
+    </ul>
+
+    <h2>jak pracuju</h2>
+    <p>
+      Vedu malý tým. Děláme to tak, že to funguje, je to levné na provoz a nejde to za půl roku
+      do koše kvůli upgrade hellu. Nepotřebuju Kubernetes ani microservices, abych ti udělal
+      web pro firmu o pěti lidech.
     </p>
     <p>
-      Když chceš něco probrat, klidně napiš:
+      GDPR-friendly bez 47 cookie banner pluginů. Cloudflare Web Analytics místo GA.
+      Domain provisioning přes API. Recurring revenue místo dvacáté redesignové zakázky.
+    </p>
+
+    <h2>offline</h2>
+    <p>
+      Týnec nad Sázavou. Když zrovna nepíšu kód, jezdím na Talarii, plevu bylinkovou skalku
+      nebo plánuju, jak opravit starý statek (plánování postupuje rychleji než oprava).
+    </p>
+
+    <h2>kontakt</h2>
+    <p>
+      E-mail. Kdo chce, najde:
       <button id="copy-email" type="button" title="Zkopíruj e-mail">hromadadan@gmail.com</button>
       nebo jdi na <a href="contacts/">kontakty</a>.
     </p>

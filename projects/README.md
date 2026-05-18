@@ -5,9 +5,11 @@ slug: projects
 
 # projects/
 
-Co jsem rozjel a o čem stojí mluvit.
+Co stavíme. Část veřejně, část pod NDA — co tu není, to nejspíš nebudu komentovat.
 
-- [fakan.md](fakan.md) — osobní web jako mindmapa
-- [kanban.md](kanban.md) — vlastní kanban pro denní práci
-- [prsi-slysim.md](prsi-slysim.md) — drobnost stranou
+- [kanban.md](kanban.md) — kanban s magic link auth, fractional indexing, R2 přílohy
+- [plotguard.md](plotguard.md) — virtuální plot pro hospodářská zvířata (draft)
+- [ai-email-agenti.md](ai-email-agenti.md) — pět specializovaných agentů
+- [crm-ats.md](crm-ats.md) — CRM/ATS pro mBlue
+- [fakan.md](fakan.md) — mindmap renderer (nad tímhle repem jako kazetou)
 - [index.html](index.html) — filterable přehled

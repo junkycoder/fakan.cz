@@ -9,16 +9,17 @@ tags: meta, web
 
 Měl jsem mindmap-styled experiment v `~/fakan/`, který se mi líbí — chodí
 se po něm šipkami, vykresluje se ASCII tree, listy jsou `.md` soubory.
-Problém je, že je to **infrastruktura**, ne obsah. Pořád dokola jsem dělal
+Problém je, že je to **renderer**, ne obsah. Pořád dokola jsem dělal
 features místo psaní.
 
-Tahle stránka je proto **obsah-first**. Složky, `.md` soubory, pět
-jednoduchých `index.html`. Žádný build, žádný framework, žádný router.
-Funguje to jako web (otevři `index.html`) i jako GitHub-čitelná dokumentace
-(otevři `README.md`).
+Tahle stránka je proto **obsah-first** a od rendereru oddělená. Složky,
+`.md` soubory, pět jednoduchých `index.html`. Žádný build, žádný framework,
+žádný router. Funguje to jako web (otevři `index.html`) i jako GitHub-čitelná
+dokumentace (otevři `README.md`).
 
-A protože je obsah v gitu, můžu ho v budoucnu **připojit do mindmapy** jako
-mountnutou složku. Stejné soubory, dvě UI. Volba je na tobě.
+Říkám tomu **kazeta**. Repo je obsah, který se vsadí do dvou rendererů:
+statického webu (tady, lineárně) a mindmapy (fakan, jako prolézatelný strom).
+Stejné soubory, dvě UI. Volba je na tobě.
 
 ## Co tady bude
 
