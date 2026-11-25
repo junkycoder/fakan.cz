@@ -36,7 +36,16 @@ p { margin: 0 0 2mm; }
 .job ul { margin: 1.4mm 0 0; padding-left: 4mm; }
 .job li { margin: 0 0 1mm; }
 
-.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; }
+/* Starší praxe: role na jeden řádek, roky ve stejném sloupci jako u .job */
+.early { padding: 1.4mm 0 0.4mm; border-top: 0.5pt solid var(--line); }
+.early .row { display: grid; grid-template-columns: 34mm 1fr; gap: 0 6mm; padding: 0.5mm 0;
+  break-inside: avoid; }
+.early p { margin: 0; }
+.early .when { color: var(--muted); font: 8.4pt/1.6 var(--mono); }
+.early b { font-weight: 600; }
+.early span, .muted { color: var(--muted); }
+
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; break-inside: avoid; }
 .tags { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 1.6mm; }
 .tags li { padding: 0.6mm 2.2mm; border: 0.6pt solid var(--line); border-radius: 2mm; font-size: 8.6pt; }
 
