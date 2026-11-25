@@ -42,18 +42,23 @@ Jedna stránka s přepínačem **profesní / osobní** (`/` a `/osobni`), Worker
   a kontakt a soubory přitom odletí k ikoně stahování prohlížeče (na počítači vpravo
   nahoře, na telefonu dolů).
 - **Osobní:** feed ve stylu 9GAG, **zamčený**. Kdo chce dovnitř, klikne na „Požádat
-  o přístup e-mailem“ a pošle mi e-mail s odkazem `/pustit/<id>`. Odkaz otevřu, potvrdím
-  (poprvé na zařízení i heslem) a jeho prohlížeč se sám odemkne. Na `/spravce` se přihlásím
-  bez žádosti.
+  o přístup e-mailem“ a pošle e-mail na `jsem@fakan.cz` s odkazem `/pustit/<id>`. Pošta na
+  tuhle adresu jde přes Email Routing do Workeru: ten si žádost i odesílatele zapíše (D1
+  `requests`) a zprávu mi přepošle (secret `PRESMEROVAT_NA`). Odkaz otevřu, uvidím, kdo žádá,
+  potvrdím (poprvé na zařízení i heslem) a jeho prohlížeč se sám odemkne. Na `/spravce` se
+  přihlásím bez žádosti.
 - Taby jako na 9GAG: **Nejlepší** (příspěvky s aspoň 2 hlasy, `TOP_MIN` v `index.html`),
   **Všichni** a pak každý člověk zvlášť. Tlačítko **Přidat** dole nahrává fotky a videa,
   smazat může autor nebo já.
 - Data: lidé, příspěvky a hlasy v D1 `fakan-feed` (schéma v `web/migrations/`), média nových
   příspěvků v R2 `fakan-feed`. Archiv 1 864 mých upvotů je v `web/public/feed.json`, média čte
   Worker z R2 `justpost-media` (`posts/imported/`), jen čtení.
-- Secrets Workeru: `PODPIS_KLIC` (náhodný, podepisuje cookies; změna = všichni ven)
-  a `SPRAVCE_KLIC` (moje heslo): `cd web && npx wrangler secret put SPRAVCE_KLIC`.
-  Lokálně oba v `web/.dev.vars` (mimo git).
+- Secrets Workeru: `PODPIS_KLIC` (náhodný, podepisuje cookies; změna = všichni ven),
+  `SPRAVCE_KLIC` (moje heslo, v 1Passwordu „fakan.cz – správce“) a `PRESMEROVAT_NA` (kam
+  přeposílat poštu z jsem@; musí být ověřená adresa v Email Routing). Změna hesla:
+  `op read "op://Employee/fakan.cz – správce/password" | tr -d '\n' | npx wrangler secret put SPRAVCE_KLIC`.
+  Lokálně všechny v `web/.dev.vars` (mimo git). Test pošty lokálně:
+  `curl -X POST 'http://localhost:8795/cdn-cgi/handler/email?from=a@example.com&to=jsem@fakan.cz' --data-binary @zprava.eml`.
 - Vyhodit člověka: smazat jeho řádek v `members` (`npx wrangler d1 execute fakan-feed --remote`),
   pak už nic nepřidá; feed uvidí, dokud se nezmění `PODPIS_KLIC`.
 - Podklady: zdroje v `web/podklady/` (`cv.html`, `reference.html`), výstupy

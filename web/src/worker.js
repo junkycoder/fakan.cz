@@ -5,6 +5,9 @@
 // Dan odkaz otevře, potvrdí a člověk se zapíše do D1 (members). Prohlížeč
 // návštěvníka se pak ptá na /osobni/stav a dostane podepsanou cookie s přístupem.
 // Vpuštění (i Dan) přidávají příspěvky (média v R2 fakan-feed) a hlasují.
+//
+// Pošta na jsem@fakan.cz chodí sem (Email Routing → Worker). Žádost o přístup se
+// zapíše do D1 (requests) a každá zpráva se přepošle Danovi (secret PRESMEROVAT_NA).
 
 const MEDIA_PREFIX = "posts/imported/";
 // Název souboru z 9GAG exportu: 0001_ayNOnMM.jpg / 0002_azx0EnB.mp4
@@ -29,6 +32,9 @@ const MAX_VIDEO = 95 * 1024 * 1024;
 const MAX_CAPTION = 500;
 const MAX_NAME = 40;
 const POST_KEY = /^[a-z0-9]{8,10}-[A-Za-z0-9_-]{8}\.(jpg|png|gif|webp|mp4|mov|webm)$/;
+// Odkaz na schválení v textu žádosti (i v HTML části a po dekódování MIME)
+const REQUEST_LINK = /\/pustit\/([A-Za-z0-9_-]{22})(?![A-Za-z0-9_-])/;
+const MAX_PARSED_EMAIL = 2 * 1024 * 1024;
 const VOTE_REF = /^(a:\d{1,6}|n:[a-z0-9]{8,10}-[A-Za-z0-9_-]{8}\.(jpg|png|gif|webp|mp4|mov|webm))$/;
 
 // Stránky pro Dana (schválení, přihlášení) potřebují odeslat formulář
@@ -45,6 +51,29 @@ const SECURITY_HEADERS = {
 };
 
 export default {
+  // jsem@fakan.cz: zapsat žádost o přístup a přeposlat Danovi
+  async email(message, env) {
+    if (!env.PRESMEROVAT_NA) {
+      message.setReject("Schránka jsem@fakan.cz teď nepřijímá poštu.");
+      return;
+    }
+    try {
+      const raw = message.rawSize <= MAX_PARSED_EMAIL ? await new Response(message.raw).text() : "";
+      const match = REQUEST_LINK.exec(mimeText(raw));
+      if (match) {
+        const sender = parseAddress(message.headers.get("from")) || { email: message.from, name: "" };
+        await env.DB.prepare(
+          `INSERT INTO requests (id, email, name, received_at) VALUES (?, ?, ?, ?)
+           ON CONFLICT (id) DO UPDATE SET email = excluded.email, name = excluded.name, received_at = excluded.received_at`,
+        ).bind(match[1], sender.email.slice(0, 200), sender.name.slice(0, MAX_NAME), Date.now()).run();
+      }
+    } catch (error) {
+      // Zápis žádosti je bonus, zpráva musí Danovi dojít vždycky
+      console.error("zadost z e-mailu", error);
+    }
+    await message.forward(env.PRESMEROVAT_NA);
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
 
@@ -358,16 +387,22 @@ async function approvePage(request, env, url, id) {
   if (admin && (await env.DB.prepare("SELECT 1 FROM members WHERE id = ?").bind(id).first())) {
     return page("Už je vpuštěný", `<p>Tuhle žádost jsi už schválil.</p><p class="muted">Žádost ${id}</p>`);
   }
+  // Od koho žádost je, víme jen když prošla přes jsem@fakan.cz; Danovi to ukážeme až po přihlášení
+  const sender = admin ? await env.DB.prepare("SELECT email, name FROM requests WHERE id = ?").bind(id).first() : null;
+  const from = sender
+    ? `<p>Žádost poslal <b>${escapeHtml(sender.name || sender.email)}</b>${sender.name ? ` <span class="muted">${escapeHtml(sender.email)}</span>` : ""}.</p>`
+    : "<p>Někdo tě prosí o přístup do osobní části fakan.cz. Kdo to je, vidíš v&nbsp;e-mailu, ze kterého jsi přišel.</p>";
   const password = admin ? "" : `
       <input type="text" name="username" value="dan" autocomplete="username" hidden>
       <label>Tvoje heslo pro fakan.cz
         <input type="password" name="klic" autocomplete="current-password" required autofocus></label>`;
   return page("Pustit dál?", `
-    <p>Někdo tě prosí o přístup do osobní části fakan.cz. Kdo to je, vidíš v e-mailu, ze kterého jsi přišel.</p>
+    ${from}
     ${error}
     <form method="post">${password}
       <label><span>Kdo to je <span class="muted">(jméno v&nbsp;tabu, může si ho změnit)</span></span>
-        <input type="text" name="jmeno" maxlength="${MAX_NAME}" placeholder="např. Petr" autocomplete="off"></label>
+        <input type="text" name="jmeno" maxlength="${MAX_NAME}" placeholder="např. Petr" autocomplete="off"
+          value="${escapeHtml(sender?.name?.split(" ")[0] || "")}"></label>
       <button type="submit">Pustit dál</button>
     </form>
     <p class="muted">Když ho pustit nechceš, stačí stránku zavřít. Žádost ${id}</p>`, error ? 403 : 200, headers);
@@ -439,6 +474,46 @@ function page(title, body, status = 200, headers = new Headers()) {
 </body>
 </html>`;
   return new Response(html, { status, headers });
+}
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+}
+
+// Text e-mailu i s dekódovanými částmi (base64, quoted-printable), ať se najde odkaz na žádost
+function mimeText(raw) {
+  const texts = [raw, raw.replace(/=\r?\n/g, "").replace(/=([0-9A-F]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))];
+  const base64Parts = /content-transfer-encoding:[ \t]*base64[^\n]*\n(?:[^\r\n]+\r?\n)*?\r?\n((?:[A-Za-z0-9+/=]+\r?\n?)+)/gi;
+  for (const part of raw.matchAll(base64Parts)) {
+    try {
+      const bytes = Uint8Array.from(atob(part[1].replace(/\s+/g, "")), (char) => char.charCodeAt(0));
+      texts.push(new TextDecoder().decode(bytes));
+    } catch {}
+  }
+  return texts.join("\n");
+}
+
+// "Petr Novák <petr@example.com>" → { name, email }; jméno může být v RFC 2047 (=?UTF-8?B?…?=)
+function parseAddress(header) {
+  if (!header) return null;
+  const match = /^\s*(?:"?([^"<]*?)"?\s*)?<([^>\s]+@[^>\s]+)>\s*$/.exec(header) || /^\s*([^\s<>]+@[^\s<>]+)\s*$/.exec(header);
+  if (!match) return null;
+  const email = match[2] || match[1];
+  const name = match[2] ? decodeWords(match[1] || "").trim() : "";
+  return { email, name };
+}
+
+function decodeWords(text) {
+  return text.replace(/=\?([^?]+)\?([bq])\?([^?]*)\?=/gi, (whole, charset, encoding, data) => {
+    try {
+      const binary = encoding.toLowerCase() === "b"
+        ? atob(data)
+        : data.replace(/_/g, " ").replace(/=([0-9A-F]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+      return new TextDecoder(charset).decode(Uint8Array.from(binary, (char) => char.charCodeAt(0)));
+    } catch {
+      return whole;
+    }
+  });
 }
 
 function json(data, status = 200) {
