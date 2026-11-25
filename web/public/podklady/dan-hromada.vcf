@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Hromada;Dan;;;
+FN:Dan Hromada
+ORG:Indigo Studio s.r.o.
+TITLE:CEO
+EMAIL;TYPE=INTERNET,WORK:daniel@indigostudio.cz
+TEL;TYPE=CELL,VOICE:+420604690539
+ADR;TYPE=WORK:;;Chudenická 1059/30;Praha;;102 00;Česko
+URL:https://fakan.cz
+item1.URL:https://indigostudio.cz
+item1.X-ABLabel:Indigo Studio
+END:VCARD
