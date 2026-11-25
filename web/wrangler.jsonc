@@ -22,6 +22,8 @@
 	// Zámek a vlastní feed: lidé, příspěvky a hlasy v D1 (schéma v migrations/),
 	// média nových příspěvků v R2 fakan-feed. Secrets: PODPIS_KLIC (podpis cookies),
 	// SPRAVCE_KLIC (Danovo heslo pro schvalování).
+	// Oznámení o žádosti Danovi (adresát z secretu PRESMEROVAT_NA, musí být ověřený v Email Routing)
+	"send_email": [{ "name": "OZNAMENI" }],
 	"d1_databases": [{ "binding": "DB", "database_name": "fakan-feed", "database_id": "00f73615-f963-4475-bbf9-00b086ebffed" }],
 	// fakan.cz převzal tento Worker od fakan-cz (mindmapa běží dál na mindmap.fakan.cz)
 	"routes": [{ "pattern": "fakan.cz", "custom_domain": true }],

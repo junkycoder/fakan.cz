@@ -44,7 +44,12 @@ Jedna stránka s přepínačem **profesní / osobní** (`/` a `/osobni`), Worker
 - **Osobní:** feed ve stylu 9GAG, **zamčený**. Kdo chce dovnitř, klikne na „Požádat
   o přístup e-mailem“ a pošle e-mail na `jsem@fakan.cz` s odkazem `/pustit/<id>`. Pošta na
   tuhle adresu jde přes Email Routing do Workeru: ten si žádost i odesílatele zapíše (D1
-  `requests`) a zprávu mi přepošle (secret `PRESMEROVAT_NA`). Odkaz otevřu, uvidím, kdo žádá,
+  `requests`) a pošle mi vlastní oznámení s tlačítkem Pustit dál (binding `OZNAMENI`,
+  odpověď jde rovnou žadateli). Ostatní poštu z jsem@ mi přepošle (secret `PRESMEROVAT_NA`).
+- Jeden člověk, víc zařízení (`devices`). Při schválení vyberu, kdo to je: nový člověk, někdo
+  známý, nebo já. Jeho adresu si Worker zapamatuje (`emails`) a další zařízení z ní pustí sám,
+  ale jen když e-mail nese platný DKIM podpis domény odesílatele (Worker ho ověřuje sám,
+  klíč bere z DNS). Bez podpisu přijde oznámení s varováním, že adresa může být podvržená. Odkaz otevřu, uvidím, kdo žádá,
   potvrdím (poprvé na zařízení i heslem) a jeho prohlížeč se sám odemkne. Na `/spravce` se
   přihlásím bez žádosti.
 - Taby jako na 9GAG: **Nejlepší** (příspěvky s aspoň 2 hlasy, `TOP_MIN` v `index.html`),
