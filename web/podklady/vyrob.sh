@@ -11,7 +11,7 @@ mkdir -p "$out"
 
 for name in cv reference; do
   "$chrome" --headless=new --disable-gpu --no-pdf-header-footer \
-    --print-to-pdf="$out/dan-hromada-$name.pdf" "file://$here/$name.html" 2>/dev/null
+    --print-to-pdf="$out/daniel-hromada-$name.pdf" "file://$here/$name.html" 2>/dev/null
 done
 
 # Náhled odkazu fakan.cz (og:image) 1200 × 630, iMessage a spol. SVG neumí
@@ -22,8 +22,8 @@ done
 printf '%s\r\n' \
   'BEGIN:VCARD' \
   'VERSION:3.0' \
-  'N:Hromada;Dan;;;' \
-  'FN:Dan Hromada' \
+  'N:Hromada;Daniel;;;' \
+  'FN:Daniel Hromada' \
   'ORG:Indigo Studio s.r.o.' \
   'TITLE:CEO' \
   'EMAIL;TYPE=INTERNET,WORK:daniel@indigostudio.cz' \
@@ -32,6 +32,6 @@ printf '%s\r\n' \
   'URL:https://fakan.cz' \
   'item1.URL:https://indigostudio.cz' \
   'item1.X-ABLabel:Indigo Studio' \
-  'END:VCARD' > "$out/dan-hromada.vcf"
+  'END:VCARD' > "$out/daniel-hromada.vcf"
 
 ls -l "$out"

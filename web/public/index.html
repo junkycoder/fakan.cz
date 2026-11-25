@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Dan Hromada · fakan.cz</title>
-  <meta name="description" content="Dan Hromada, CEO Indigo Studio s.r.o. Software na míru, vývoj a DevOps, AI agenti ve firmách. Klikněte na vizitku a stáhne se CV, reference a kontakt.">
-  <meta property="og:title" content="Dan Hromada · fakan.cz">
+  <title>Daniel Hromada · fakan.cz</title>
+  <meta name="description" content="Daniel Hromada, CEO Indigo Studio s.r.o. Software na míru, vývoj a DevOps, AI agenti ve firmách. Klikněte na vizitku a stáhne se CV, reference a kontakt.">
+  <meta property="og:title" content="Daniel Hromada · fakan.cz">
   <meta property="og:description" content="CEO Indigo Studio s.r.o. Klikněte na vizitku a stáhne se CV, reference a kontakt.">
   <meta property="og:url" content="https://fakan.cz/">
   <meta property="og:type" content="website">
@@ -16,7 +16,7 @@
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Vizitka Dana Hromady, CEO Indigo Studio s.r.o.">
+  <meta property="og:image:alt" content="Vizitka Daniela Hromady, CEO Indigo Studio s.r.o.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#f4f3ef">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -570,13 +570,13 @@
   </nav>
 
   <main id="pro" class="pro">
-    <h1 class="sr-only">Dan Hromada, CEO Indigo Studio s.r.o.</h1>
+    <h1 class="sr-only">Daniel Hromada, CEO Indigo Studio s.r.o.</h1>
     <button class="card" id="card" type="button"
-      aria-label="Stáhnout podklady Dana Hromady: CV, reference a kontakt"
+      aria-label="Stáhnout podklady Daniela Hromady: CV, reference a kontakt"
       aria-describedby="card-about">
       <span class="card-face">
         <span class="card-top"><span>fakan.cz</span><span>vizitka</span></span>
-        <span class="card-name">Dan Hromada</span>
+        <span class="card-name">Daniel Hromada</span>
         <span class="card-role">CEO, Indigo Studio s.r.o.</span>
         <span class="card-line">Software na míru, vývoj a&nbsp;DevOps, AI agenti ve firmách</span>
         <span class="card-contacts">daniel@indigostudio.cz<br>+420&nbsp;604&nbsp;690&nbsp;539</span>
@@ -593,9 +593,9 @@
     <p class="sr-only" id="card-about">CEO Indigo Studio s.r.o. E-mail daniel@indigostudio.cz, telefon +420 604 690 539.</p>
     <p class="hint">Celá vizitka je tlačítko. Stáhne CV, reference a&nbsp;kontakt.</p>
     <p class="after" id="after">Něco se nestáhlo? Jednotlivě:
-      <a href="/podklady/dan-hromada-cv.pdf" download>CV</a> ·
-      <a href="/podklady/dan-hromada-reference.pdf" download>Reference</a> ·
-      <a href="/podklady/dan-hromada.vcf" download>Kontakt</a></p>
+      <a href="/podklady/daniel-hromada-cv.pdf" download>CV</a> ·
+      <a href="/podklady/daniel-hromada-reference.pdf" download>Reference</a> ·
+      <a href="/podklady/daniel-hromada.vcf" download>Kontakt</a></p>
     <p class="sr-only" role="status" id="dl-status"></p>
     <p class="pro-foot">
       <a href="https://indigostudio.cz">indigostudio.cz</a> ·
@@ -680,7 +680,7 @@
     const root = document.documentElement;
     const views = { pro: document.getElementById("pro"), osobni: document.getElementById("osobni") };
     const switchLinks = document.querySelectorAll(".switch a[data-to]");
-    const TITLES = { pro: "Dan Hromada · fakan.cz", osobni: "fakan · osobní" };
+    const TITLES = { pro: "Daniel Hromada · fakan.cz", osobni: "fakan · osobní" };
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     // Barva lišty prohlížeče = pozadí aktuálního režimu a schématu systému
     const paintTheme = () => (themeMeta.content = getComputedStyle(root).getPropertyValue("--bg").trim());
@@ -724,9 +724,9 @@
 
     // ——— vizitka: postupné stažení podkladů ———
     const FILES = [
-      { href: "/podklady/dan-hromada-cv.pdf", ext: "PDF", name: "CV" },
-      { href: "/podklady/dan-hromada-reference.pdf", ext: "PDF", name: "reference" },
-      { href: "/podklady/dan-hromada.vcf", ext: "VCF", name: "kontakt" },
+      { href: "/podklady/daniel-hromada-cv.pdf", ext: "PDF", name: "CV" },
+      { href: "/podklady/daniel-hromada-reference.pdf", ext: "PDF", name: "reference" },
+      { href: "/podklady/daniel-hromada.vcf", ext: "VCF", name: "kontakt" },
     ];
     const card = document.getElementById("card");
     const chips = card.querySelectorAll(".file");
@@ -1397,14 +1397,14 @@
     function requestMail(id) {
       const subject = "Pustíš mě do fakan.cz/osobni?";
       const body = [
-        "Ahoj Dane,",
+        "Ahoj Danieli,",
         "",
         "pustíš mě do osobní části fakan.cz?",
         "",
         "(napiš, kdo jsi a odkud se známe)",
         "",
         "--",
-        "Odkaz pro Dana, kterým mě pustí dál:",
+        "Odkaz pro Daniela, kterým mě pustí dál:",
         `${location.origin}/pustit/${id}`,
         "",
       ].join("\r\n");

@@ -18,6 +18,8 @@ const MEDIA_PREFIX = "posts/imported/";
 // Název souboru z 9GAG exportu: 0001_ayNOnMM.jpg / 0002_azx0EnB.mp4
 const MEDIA_NAME = /^\d{4}_[A-Za-z0-9]+\.(jpg|mp4|png|gif|webp)$/;
 
+const OLD_FILES = new Set(["/podklady/dan-hromada-cv.pdf", "/podklady/dan-hromada-reference.pdf", "/podklady/dan-hromada.vcf"]);
+
 // Stránky, které obsluhuje index.html (přepínač profesní / osobní)
 const APP_PATHS = new Set(["/", "/osobni"]);
 
@@ -137,6 +139,11 @@ export default {
     if (url.pathname.startsWith("/p/")) return sharedPost(request, env, url);
     if (url.pathname.startsWith("/pustit/")) return approvePage(request, env, url, url.pathname.slice(8));
     if (url.pathname === "/spravce") return adminPage(request, env, url);
+
+    // Podklady se přejmenovaly z dan-hromada-* na daniel-hromada-* (25. 11. 2026)
+    if (OLD_FILES.has(url.pathname)) {
+      return Response.redirect(new URL(url.pathname.replace("/dan-hromada", "/daniel-hromada"), url), 301);
+    }
 
     if (url.pathname === "/osobni/") {
       return Response.redirect(new URL("/osobni", url), 301);
@@ -356,7 +363,7 @@ function sharePage(url, post, status = 200) {
   });
   const title = post ? (post.caption || "Meme z fakan.cz") : "Tenhle kousek tu už není";
   const description = post
-    ? "Kousek z fakan.cz, osobního feedu Dana Hromady a lidí, které pustil dál."
+    ? "Kousek z fakan.cz, osobního feedu Daniela Hromady a lidí, které pustil dál."
     : "Možná ho autor smazal.";
   const media = post ? `${url.origin}/p/${post.id}/media` : "";
   const og = post
@@ -813,7 +820,7 @@ function plainBody(raw) {
     }
     return body
       .replace(/\r\n/g, "\n")
-      .split(/\n-- ?\n|\nOdkaz pro Dana/)[0]
+      .split(/\n-- ?\n|\nOdkaz pro Dan/)[0]
       .replace("(napiš, kdo jsi a odkud se známe)", "")
       .replace(/\n{3,}/g, "\n\n")
       .trim()

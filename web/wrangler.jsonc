@@ -7,7 +7,8 @@
 		"directory": "./public",
 		"binding": "ASSETS",
 		"html_handling": "auto-trailing-slash",
-		"run_worker_first": ["/", "/osobni", "/osobni/*", "/feed.json", "/m/*", "/n/*", "/p/*", "/pustit/*", "/spravce"]
+		"run_worker_first": ["/", "/osobni", "/osobni/*", "/feed.json", "/m/*", "/n/*", "/p/*", "/pustit/*", "/spravce",
+			"/podklady/dan-hromada-cv.pdf", "/podklady/dan-hromada-reference.pdf", "/podklady/dan-hromada.vcf"]
 	},
 	// Média osobního feedu (9GAG archiv) leží v bucketu aplikace just post
 	// pod posts/imported/. Worker je jen čte. "remote" = i wrangler dev čte ostrý bucket.
