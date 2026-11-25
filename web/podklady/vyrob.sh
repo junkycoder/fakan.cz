@@ -1,6 +1,7 @@
 #!/bin/sh
-# Přegeneruje podklady ke stažení do public/podklady/ (CV a reference z HTML přes Chrome, vCard).
-# Spouštět po změně cv.html, reference.html nebo kontaktů: sh web/podklady/vyrob.sh
+# Přegeneruje podklady ke stažení do public/podklady/ (CV a reference z HTML přes Chrome, vCard)
+# a náhled odkazu public/og.png z og.html.
+# Spouštět po změně cv.html, reference.html, og.html nebo kontaktů: sh web/podklady/vyrob.sh
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -12,6 +13,10 @@ for name in cv reference; do
   "$chrome" --headless=new --disable-gpu --no-pdf-header-footer \
     --print-to-pdf="$out/dan-hromada-$name.pdf" "file://$here/$name.html" 2>/dev/null
 done
+
+# Náhled odkazu fakan.cz (og:image) 1200 × 630, iMessage a spol. SVG neumí
+"$chrome" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
+  --window-size=1200,630 --screenshot="$here/../public/og.png" "file://$here/og.html" 2>/dev/null
 
 # vCard 3.0, řádky musí končit CRLF
 printf '%s\r\n' \

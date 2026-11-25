@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title>fakan.cz – náhled pro sdílení</title>
+  <!-- Zdroj obrázku public/og.png (1200 × 630) pro náhled odkazu fakan.cz v iMessage, WhatsApp apod.
+       SVG tam nefunguje, proto PNG. Vyrábí ho vyrob.sh přes Chrome. Stejná vizitka jako na webu, jen větší. -->
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+    body {
+      display: grid;
+      place-items: center;
+      background: #f4f3ef;
+      color: #15151a;
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      width: 820px;
+      height: 530px;
+      padding: 42px 50px 34px;
+      border-radius: 28px;
+      background: #fff;
+      box-shadow:
+        0 0 0 1.5px rgba(21, 21, 26, .06),
+        0 4px 8px rgba(0, 0, 0, .04),
+        0 24px 48px -16px rgba(0, 0, 0, .14),
+        0 60px 120px -40px rgba(30, 10, 80, .32);
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      font: 500 19px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #6b6b73;
+    }
+    .name { margin-top: auto; font-size: 64px; font-weight: 650; line-height: 1.05; letter-spacing: -.025em; }
+    .role { margin-top: 12px; font-size: 28px; font-weight: 600; color: #2a018a; }
+    .line { margin-top: 2px; font-size: 25px; color: #6b6b73; }
+    .contacts { margin: 22px 0 auto; font: 22px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .files {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 2px dashed #dddcd4;
+      font: 500 21px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #6b6b73;
+    }
+    .file { display: inline-flex; align-items: center; gap: 12px; }
+    .doc {
+      position: relative;
+      width: 22px;
+      height: 28px;
+      border: 2.5px solid currentColor;
+      border-radius: 3px;
+      clip-path: polygon(0 0, 62% 0, 100% 32%, 100% 100%, 0 100%);
+    }
+    .doc::after {
+      content: "";
+      position: absolute;
+      top: -2.5px; right: -2.5px;
+      width: 10px; height: 10px;
+      border-left: 2.5px solid currentColor;
+      border-bottom: 2.5px solid currentColor;
+    }
+    .go { display: inline-flex; align-items: center; gap: 10px; margin-left: auto; font-weight: 600; color: #15151a; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top"><span>fakan.cz</span><span>vizitka</span></div>
+    <div class="name">Dan Hromada</div>
+    <div class="role">CEO, Indigo Studio s.r.o.</div>
+    <div class="line">Software na míru, vývoj a&nbsp;DevOps, AI agenti ve firmách</div>
+    <div class="contacts">daniel@indigostudio.cz<br>+420&nbsp;604&nbsp;690&nbsp;539</div>
+    <div class="files">
+      <span class="file"><span class="doc"></span>CV</span>
+      <span class="file"><span class="doc"></span>Reference</span>
+      <span class="file"><span class="doc"></span>Kontakt</span>
+      <span class="go">stáhnout
+        <svg width="20" height="20" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1v8M2.5 5.5 6 9l3.5-3.5M1.5 11h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+  </div>
+</body>
+</html>
