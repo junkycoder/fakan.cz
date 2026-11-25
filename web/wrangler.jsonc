@@ -7,7 +7,7 @@
 		"directory": "./public",
 		"binding": "ASSETS",
 		"html_handling": "auto-trailing-slash",
-		"run_worker_first": ["/", "/osobni", "/osobni/", "/m/*"]
+		"run_worker_first": ["/", "/osobni", "/osobni/*", "/feed.json", "/m/*", "/n/*", "/pustit/*", "/spravce"]
 	},
 	// Média osobního feedu (9GAG archiv) leží v bucketu aplikace just post
 	// pod posts/imported/. Worker je jen čte. "remote" = i wrangler dev čte ostrý bucket.
@@ -16,8 +16,13 @@
 			"binding": "MEDIA",
 			"bucket_name": "justpost-media",
 			"remote": true
-		}
+		},
+		{ "binding": "FEED", "bucket_name": "fakan-feed" }
 	],
+	// Zámek a vlastní feed: lidé, příspěvky a hlasy v D1 (schéma v migrations/),
+	// média nových příspěvků v R2 fakan-feed. Secrets: PODPIS_KLIC (podpis cookies),
+	// SPRAVCE_KLIC (Danovo heslo pro schvalování).
+	"d1_databases": [{ "binding": "DB", "database_name": "fakan-feed", "database_id": "00f73615-f963-4475-bbf9-00b086ebffed" }],
 	// fakan.cz převzal tento Worker od fakan-cz (mindmapa běží dál na mindmap.fakan.cz)
 	"routes": [{ "pattern": "fakan.cz", "custom_domain": true }],
 	"observability": {

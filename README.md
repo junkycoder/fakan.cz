@@ -41,11 +41,25 @@ Jedna stránka s přepínačem **profesní / osobní** (`/` a `/osobni`), Worker
 - **Profesní:** vizitka, která je celá tlačítko. Po kliknutí postupně stáhne CV, reference
   a kontakt a soubory přitom odletí k ikoně stahování prohlížeče (na počítači vpravo
   nahoře, na telefonu dolů).
-- **Osobní:** feed ve stylu 9GAG. Archiv 1 864 mých upvotů je v `web/public/feed.json`,
-  média čte Worker z R2 bucketu `justpost-media` (`posts/imported/`), jen čtení.
+- **Osobní:** feed ve stylu 9GAG, **zamčený**. Kdo chce dovnitř, klikne na „Požádat
+  o přístup e-mailem“ a pošle mi e-mail s odkazem `/pustit/<id>`. Odkaz otevřu, potvrdím
+  (poprvé na zařízení i heslem) a jeho prohlížeč se sám odemkne. Na `/spravce` se přihlásím
+  bez žádosti.
+- Taby jako na 9GAG: **Nejlepší** (příspěvky s aspoň 2 hlasy, `TOP_MIN` v `index.html`),
+  **Všichni** a pak každý člověk zvlášť. Tlačítko **Přidat** dole nahrává fotky a videa,
+  smazat může autor nebo já.
+- Data: lidé, příspěvky a hlasy v D1 `fakan-feed` (schéma v `web/migrations/`), média nových
+  příspěvků v R2 `fakan-feed`. Archiv 1 864 mých upvotů je v `web/public/feed.json`, média čte
+  Worker z R2 `justpost-media` (`posts/imported/`), jen čtení.
+- Secrets Workeru: `PODPIS_KLIC` (náhodný, podepisuje cookies; změna = všichni ven)
+  a `SPRAVCE_KLIC` (moje heslo): `cd web && npx wrangler secret put SPRAVCE_KLIC`.
+  Lokálně oba v `web/.dev.vars` (mimo git).
+- Vyhodit člověka: smazat jeho řádek v `members` (`npx wrangler d1 execute fakan-feed --remote`),
+  pak už nic nepřidá; feed uvidí, dokud se nezmění `PODPIS_KLIC`.
 - Podklady: zdroje v `web/podklady/` (`cv.html`, `reference.html`), výstupy
   v `web/public/podklady/`. Po změně textů: `sh web/podklady/vyrob.sh` (PDF přes Chrome).
-- Lokálně: `cd web && npx wrangler dev` (R2 jde vzdáleně, je potřeba přihlášený wrangler).
+- Lokálně: `cd web && npx wrangler d1 migrations apply fakan-feed --local && npx wrangler dev`
+  (archiv z R2 jde vzdáleně, je potřeba přihlášený wrangler).
 - Nasazení: `cd web && npx wrangler deploy` (custom domain `fakan.cz`). Mindmapa (Worker
   `fakan-cz`) se 25. 11. 2026 přestěhovala z fakan.cz na mindmap.fakan.cz.
 

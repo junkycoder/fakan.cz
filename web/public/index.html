@@ -290,7 +290,7 @@
     }
 
     /* ——— osobní: feed ——— */
-    .feed-page { max-width: 600px; margin: 0 auto; padding: 84px 0 64px; }
+    .feed-page { max-width: 600px; margin: 0 auto; padding: 84px 0 120px; }
     .feed-head { padding: 0 16px 18px; }
     .feed-head h1 { margin: 0; font: 700 26px/1.1 var(--sans); letter-spacing: -.02em; }
     .feed-head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
@@ -357,12 +357,162 @@
       cursor: pointer;
     }
     .post-actions a:hover, .post-actions button:hover { background: var(--card); }
+    [hidden] { display: none !important; }
+    .muted { color: var(--muted); }
+    .tabs {
+      position: sticky;
+      z-index: 20;
+      top: calc(max(14px, env(safe-area-inset-top)) + 46px);
+      display: flex;
+      gap: 4px;
+      margin: 0 0 6px;
+      padding: 8px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tabs:empty { display: none; }
+    .tabs a {
+      flex: none;
+      padding: 8px 13px;
+      border-radius: 999px;
+      color: var(--muted);
+      font: 600 14px/1 var(--sans);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .tabs a:hover { color: var(--fg); }
+    .tabs a[aria-current="page"] { background: var(--fg); color: var(--bg); }
+    .post-who { color: inherit; text-decoration: none; }
+    .post-who:hover { text-decoration: underline; }
+    .post-caption { margin: 0; padding: 0 16px 12px; font: 600 17px/1.35 var(--sans); overflow-wrap: anywhere; }
+    .post-actions .vote { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+    .post-actions .vote[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #000; }
+    .post-actions .post-delete { margin-left: auto; color: var(--muted); }
+    .feed-empty { padding: 28px 16px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    /* ——— osobní: přidat příspěvek ——— */
+    .add {
+      position: fixed;
+      z-index: 25;
+      left: 50%;
+      bottom: max(18px, calc(env(safe-area-inset-bottom) + 10px));
+      translate: -50% 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--fg);
+      color: var(--bg);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .55);
+      font: 700 15px/1 var(--sans);
+      cursor: pointer;
+    }
+    .add:hover { background: #fff; }
+    .add:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    html[data-mode="pro"] .add { display: none; }
+    .sheet {
+      width: min(520px, 100%);
+      max-height: min(92dvh, 860px);
+      margin: auto auto 0;
+      padding: 22px 18px max(18px, env(safe-area-inset-bottom));
+      border: 1px solid var(--line);
+      border-radius: 18px 18px 0 0;
+      background: var(--card);
+      color: var(--fg);
+    }
+    .sheet::backdrop { background: rgba(0, 0, 0, .7); }
+    .sheet h2 { margin: 0 0 14px; font: 700 19px/1.2 var(--sans); }
+    .sheet label { display: grid; gap: 6px; margin: 0 0 12px; font-size: 14px; }
+    .sheet textarea, .sheet input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--fg);
+      font: 16px/1.4 var(--sans);
+      resize: vertical;
+    }
+    .sheet-preview { margin: 0 0 14px; border-radius: 10px; overflow: hidden; background: #0d0d0f; }
+    .sheet-preview:empty { display: none; }
+    .sheet-preview img, .sheet-preview video { display: block; width: 100%; max-height: 42dvh; object-fit: contain; }
+    .sheet-error { margin: 0 0 12px; color: #ff8f8f; font-size: 14px; }
+    .sheet progress { width: 100%; height: 6px; margin: 0 0 12px; accent-color: var(--accent); }
+    .sheet-actions { display: flex; gap: 10px; }
+    .sheet-actions button {
+      flex: 1;
+      padding: 13px 16px;
+      border-radius: 10px;
+      font: 600 15px/1 var(--sans);
+      cursor: pointer;
+    }
+    .sheet-cancel { border: 1px solid var(--line); background: transparent; color: var(--fg); }
+    .sheet-submit { border: 0; background: var(--fg); color: var(--bg); }
+    .sheet-submit:disabled { opacity: .5; cursor: default; }
+    @media (min-width: 640px) {
+      .sheet { margin: auto; border-radius: 18px; padding-bottom: 20px; }
+    }
     .feed-end { padding: 28px 16px; border-top: 1px solid var(--line); color: var(--muted); font: 13px/1.5 var(--mono); text-align: center; }
     .feed-error { padding: 16px; color: var(--muted); }
 
+    /* ——— osobní: zámek ——— */
+    .lock {
+      margin: 6px 16px 0;
+      padding: 26px 24px 24px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+    }
+    .lock-kicker { margin: 0 0 10px; color: var(--accent); font: 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .lock h2 { margin: 0 0 8px; font: 700 22px/1.2 var(--sans); letter-spacing: -.01em; }
+    .lock p { margin: 0 0 16px; color: var(--muted); }
+    .lock-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 18px;
+      border-radius: 10px;
+      background: var(--fg);
+      color: var(--bg);
+      font: 600 15px/1 var(--sans);
+      text-decoration: none;
+    }
+    .lock-btn:hover { background: #fff; }
+    .lock-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .lock-wait { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .lock-wait p:last-child { margin-bottom: 0; }
+    .lock-wait b { color: var(--fg); font-weight: 600; }
+    .lock-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: waiting 1.6s ease-in-out infinite;
+    }
+    @keyframes waiting { 50% { opacity: .25; } }
+    .lock-fallback { font-size: 14px; }
+    .lock-fallback button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--fg);
+      font: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
     @media (min-width: 640px) {
       .media { border-radius: 10px; }
-      .feed-head, .post-head, .post-actions { padding-left: 0; padding-right: 0; }
+      .feed-head, .post-head, .post-actions, .post-caption { padding-left: 0; padding-right: 0; }
+      .tabs { margin-left: -8px; margin-right: -8px; padding-left: 8px; padding-right: 8px; }
+      .lock { margin-left: 0; margin-right: 0; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -414,8 +564,21 @@
   <main id="osobni" class="feed-page">
     <header class="feed-head">
       <h1>fakan</h1>
-      <p>Co mě baví. <span id="feed-count">Archiv</span> z&nbsp;mého 9GAG, nově i&nbsp;vlastní.</p>
+      <p>Co nás baví. <span id="feed-count">Archiv</span> z&nbsp;mého 9GAG a&nbsp;od lidí, které jsem pustil dál.</p>
     </header>
+    <nav class="tabs" id="tabs" aria-label="Výběr příspěvků"></nav>
+    <section class="lock" id="lock" aria-labelledby="lock-title" hidden>
+      <p class="lock-kicker">zamčeno</p>
+      <h2 id="lock-title">Sem pouštím jen známé</h2>
+      <p>Napiš mi e-mail. Když se známe, pustím tě dál a&nbsp;feed se ti tady otevře.</p>
+      <a class="lock-btn" id="lock-ask" href="mailto:daniel@indigostudio.cz">Požádat o&nbsp;přístup e-mailem</a>
+      <div class="lock-wait" id="lock-wait" role="status" hidden>
+        <p><span class="lock-dot" aria-hidden="true"></span><b>Čekám na tvůj e-mail.</b> Jakmile tě pustím,
+          feed se tu načte sám. Stránku klidně zavři, při návratu ve stejném prohlížeči už budeš uvnitř.</p>
+        <p class="lock-fallback">Neotevřel se ti e-mail? Pošli na daniel@indigostudio.cz text žádosti:
+          <button type="button" id="lock-copy">zkopírovat text</button></p>
+      </div>
+    </section>
     <ol class="feed" id="feed" aria-label="Příspěvky"></ol>
     <div id="sentinel" aria-hidden="true"></div>
     <noscript><p class="feed-error">Feed potřebuje JavaScript.</p></noscript>
@@ -426,18 +589,46 @@
       <article>
         <header class="post-head">
           <span class="avatar" aria-hidden="true">f</span>
-          <span class="post-who">fakan</span>
+          <a class="post-who" href="#vsichni">fakan</a>
           <span class="post-meta">z&nbsp;archivu 9GAG</span>
           <span class="post-num"></span>
         </header>
+        <p class="post-caption" hidden></p>
         <div class="media is-loading"></div>
         <footer class="post-actions">
+          <button class="vote" type="button" aria-pressed="false">
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2.5 12 9H2z" fill="currentColor"/></svg>
+            <span class="vote-count">0</span>
+          </button>
           <a class="post-source" target="_blank" rel="noopener noreferrer">originál na 9GAG</a>
           <button class="post-share" type="button">zkopírovat odkaz</button>
+          <button class="post-delete" type="button" hidden>smazat</button>
         </footer>
       </article>
     </li>
   </template>
+
+  <button class="add" id="add" type="button" hidden>
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    Přidat
+  </button>
+  <input type="file" id="add-file" accept="image/*,video/*" hidden>
+  <dialog class="sheet" id="sheet" aria-labelledby="sheet-title">
+    <form id="sheet-form">
+      <h2 id="sheet-title">Nový příspěvek</h2>
+      <div class="sheet-preview" id="sheet-preview"></div>
+      <label><span>Popisek <span class="muted">(nepovinný)</span></span>
+        <textarea name="popisek" maxlength="500" rows="2"></textarea></label>
+      <label id="sheet-name-row"><span>Tvoje jméno <span class="muted">(uvidí ho ostatní v&nbsp;tabu)</span></span>
+        <input name="jmeno" maxlength="40" autocomplete="nickname"></label>
+      <p class="sheet-error" id="sheet-error" role="alert" hidden></p>
+      <progress id="sheet-progress" max="1" value="0" hidden></progress>
+      <div class="sheet-actions">
+        <button type="button" class="sheet-cancel" id="sheet-cancel">Zrušit</button>
+        <button type="submit" class="sheet-submit" id="sheet-submit">Zveřejnit</button>
+      </div>
+    </form>
+  </dialog>
 
   <script>
     // ——— režim stránky ———
@@ -616,17 +807,134 @@
     });
 
     // ——— osobní: feed ———
+    // Příspěvky jsou dva zdroje: nové (D1 + R2, /osobni/prispevky) a archiv 9GAG (feed.json).
+    // Taby jako na 9GAG: Nejlepší (podle hlasů), Všichni a pak každý člověk zvlášť.
     const feed = document.getElementById("feed");
     const sentinel = document.getElementById("sentinel");
     const template = document.getElementById("post-tpl");
+    const tabsBar = document.getElementById("tabs");
+    const feedCount = document.getElementById("feed-count");
     const BATCH = 8;
-    let items = [];
+    const TOP_MIN = 2; // od kolika hlasů jde příspěvek do Nejlepších
+    let archive = [];
+    let all = [];
+    let people = new Map();
+    let me = null;
+    let view = [];
+    let tab = null;
     let rendered = 0;
     let feedPromise = null;
 
-    function mediaUrl([index, id, kind, ext]) {
-      return `/m/${String(index).padStart(4, "0")}_${id}.${ext || (kind === "v" ? "mp4" : "jpg")}`;
+    const nameOf = (num) => people.get(num)?.jmeno || (num === 1 ? "fakan" : "host");
+    const dateFormat = new Intl.DateTimeFormat("cs-CZ", { day: "numeric", month: "numeric", year: "numeric" });
+    const timeFormat = new Intl.DateTimeFormat("cs-CZ", { hour: "numeric", minute: "2-digit" });
+
+    function when(time) {
+      const date = new Date(time);
+      return new Date().toDateString() === date.toDateString() ? `dnes ${timeFormat.format(date)}` : dateFormat.format(date);
     }
+
+    function buildItems(posts) {
+      const votes = posts.hlasy || {};
+      const voteOf = (ref) => votes[ref] || [0, false];
+      const fresh = (posts.prispevky || []).map((post) => {
+        const ref = `n:${post.klic}`;
+        const [count, mine] = voteOf(ref);
+        return {
+          ref, anchor: `n-${post.klic.split(".")[0]}`, key: post.klic, kind: post.druh, src: `/n/${post.klic}`,
+          author: post.autor, caption: post.popisek, time: post.kdy, own: post.muj, votes: count, voted: mine,
+        };
+      });
+      // Archiv jsou moje upvoty z 9GAG, patří do mého tabu
+      const dan = [...people.values()].find((person) => person.dan)?.cislo ?? 1;
+      const old = archive.map(([index, id, kind, ext]) => {
+        const ref = `a:${index}`;
+        const [count, mine] = voteOf(ref);
+        return {
+          ref, anchor: `p-${index}`, num: index, gag: id, kind,
+          src: `/m/${String(index).padStart(4, "0")}_${id}.${ext || (kind === "v" ? "mp4" : "jpg")}`,
+          author: dan, caption: "", time: null, own: false, votes: count, voted: mine,
+        };
+      });
+      all = [...fresh, ...old];
+      all.forEach((item, position) => (item.position = position));
+      feedCount.textContent = `${all.length.toLocaleString("cs-CZ")} kousků`;
+    }
+
+    function tabList() {
+      const list = [{ id: "nejlepsi", label: "Nejlepší" }, { id: "vsichni", label: "Všichni" }];
+      const authors = new Set(all.map((item) => item.author));
+      for (const person of people.values()) {
+        if (authors.has(person.cislo)) list.push({ id: `u${person.cislo}`, label: nameOf(person.cislo) });
+      }
+      return list;
+    }
+
+    function renderTabs() {
+      tabsBar.replaceChildren(...tabList().map(({ id, label }) => {
+        const link = document.createElement("a");
+        link.href = `#${id}`;
+        link.textContent = label;
+        if (id === tab) link.setAttribute("aria-current", "page");
+        return link;
+      }));
+      tabsBar.querySelector("[aria-current]")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
+
+    function itemsFor(id) {
+      if (id === "nejlepsi") {
+        return all.filter((item) => item.votes >= TOP_MIN).sort((a, b) => b.votes - a.votes || a.position - b.position);
+      }
+      if (id === "vsichni") return all;
+      const num = Number(id.slice(1));
+      return all.filter((item) => item.author === num);
+    }
+
+    function defaultTab() {
+      return itemsFor("nejlepsi").length ? "nejlepsi" : "vsichni";
+    }
+
+    function showTab(id) {
+      tab = id;
+      view = itemsFor(id);
+      rendered = 0;
+      pauseAllVideos();
+      nearObserver.disconnect();
+      playObserver.disconnect();
+      moreObserver.unobserve(sentinel);
+      feed.replaceChildren();
+      document.querySelector(".feed-end")?.remove();
+      renderTabs();
+      if (!view.length) {
+        const empty = document.createElement("li");
+        empty.className = "feed-empty";
+        empty.textContent = id === "nejlepsi"
+          ? `Zatím tu nic není. Příspěvek se sem dostane, až bude mít aspoň ${TOP_MIN} hlasy. Hlasovat jde ve Všech.`
+          : "Tady zatím nic není.";
+        feed.append(empty);
+        return;
+      }
+      renderMore(BATCH);
+    }
+
+    // Adresa určuje tab (#vsichni, #u3) nebo konkrétní příspěvek (#p-123, #n-…)
+    function openFromHash() {
+      const id = location.hash.slice(1);
+      if (/^[pn]-/.test(id) && all.some((item) => item.anchor === id)) {
+        if (!view.some((item) => item.anchor === id)) showTab("vsichni");
+        jumpTo(id);
+        return;
+      }
+      if (tabList().some((entry) => entry.id === id)) {
+        if (id !== tab) {
+          showTab(id);
+          if (tabsBar.getBoundingClientRect().top < 0 || scrollY > tabsBar.offsetTop) scrollTo(0, 0);
+        }
+        return;
+      }
+      if (!tab) showTab(defaultTab());
+    }
+    addEventListener("hashchange", () => all.length && openFromHash());
 
     // Video dostane adresu až kousek před obrazovkou
     const nearObserver = new IntersectionObserver((entries) => {
@@ -656,24 +964,44 @@
     }
 
     function buildPost(item) {
-      const [index, id, kind] = item;
       const post = template.content.firstElementChild.cloneNode(true);
-      post.id = `p-${index}`;
-      post.querySelector(".post-num").textContent = `#${index}`;
+      const author = nameOf(item.author);
+      post.id = item.anchor;
+      post.querySelector(".avatar").textContent = author.charAt(0).toLowerCase();
+      const who = post.querySelector(".post-who");
+      who.textContent = author;
+      who.href = `#u${item.author}`;
+      post.querySelector(".post-meta").textContent = item.time ? when(item.time) : "z archivu 9GAG";
+      post.querySelector(".post-num").textContent = item.num ? `#${item.num}` : "";
+      if (item.caption) {
+        const caption = post.querySelector(".post-caption");
+        caption.textContent = item.caption;
+        caption.hidden = false;
+      }
       const source = post.querySelector(".post-source");
-      source.href = `https://9gag.com/gag/${encodeURIComponent(id)}`;
-      post.querySelector(".post-share").addEventListener("click", (event) => sharePost(event.currentTarget, index));
+      if (item.gag) source.href = `https://9gag.com/gag/${encodeURIComponent(item.gag)}`;
+      else source.remove();
+      post.querySelector(".post-share").addEventListener("click", (event) => sharePost(event.currentTarget, item));
+      const voteButton = post.querySelector(".vote");
+      paintVote(voteButton, item);
+      voteButton.addEventListener("click", () => toggleVote(voteButton, item));
+      if (item.own && item.key) {
+        const remove = post.querySelector(".post-delete");
+        remove.hidden = false;
+        remove.addEventListener("click", () => removePost(post, item));
+      }
 
+      const label = item.num ? `z archivu 9GAG, kousek ${item.num}` : `od ${author}`;
       const box = post.querySelector(".media");
       const loaded = () => box.classList.remove("is-loading");
-      if (kind === "v") {
+      if (item.kind === "v") {
         const video = document.createElement("video");
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
         video.preload = "none";
-        video.dataset.src = mediaUrl(item);
-        video.setAttribute("aria-label", `Video z archivu 9GAG, kousek ${index}`);
+        video.dataset.src = item.src;
+        video.setAttribute("aria-label", `Video ${label}`);
         video.addEventListener("loadeddata", () => {
           loaded();
           // Pozorovatel mohl chtít přehrávat dřív, než video mělo data
@@ -695,7 +1023,7 @@
         const image = document.createElement("img");
         image.loading = "lazy";
         image.decoding = "async";
-        image.alt = `Obrázek z archivu 9GAG, kousek ${index}`;
+        image.alt = item.caption || `Obrázek ${label}`;
         image.addEventListener("load", () => {
           loaded();
           // Dlouhé obrázky zkrátíme jako na 9GAG a nabídneme rozbalení
@@ -711,10 +1039,57 @@
           }
         }, { once: true });
         image.addEventListener("error", loaded, { once: true });
-        image.src = mediaUrl(item);
+        image.src = item.src;
         box.append(image);
       }
       return post;
+    }
+
+    function paintVote(button, item) {
+      button.setAttribute("aria-pressed", String(item.voted));
+      button.setAttribute("aria-label", `${item.voted ? "Zrušit můj hlas" : "Dát hlas"}, hlasů ${item.votes}`);
+      button.querySelector(".vote-count").textContent = item.votes;
+    }
+
+    async function toggleVote(button, item) {
+      const want = !item.voted;
+      item.voted = want;
+      item.votes += want ? 1 : -1;
+      paintVote(button, item);
+      try {
+        const response = await fetch("/osobni/hlas", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ post: item.ref, hlas: want }),
+        });
+        if (!response.ok) throw new Error(response.status);
+        const result = await response.json();
+        item.votes = result.hlasy;
+        item.voted = result.muj;
+      } catch {
+        item.voted = !want;
+        item.votes += want ? -1 : 1;
+      }
+      paintVote(button, item);
+    }
+
+    async function removePost(post, item) {
+      if (!confirm("Smazat tenhle příspěvek? Vrátit to nejde.")) return;
+      const response = await fetch(`/osobni/prispevek/${encodeURIComponent(item.key)}`, { method: "DELETE" }).catch(() => null);
+      if (!response?.ok) {
+        alert("Smazání se nepovedlo. Zkus to znovu.");
+        return;
+      }
+      post.remove();
+      all = all.filter((other) => other !== item);
+      all.forEach((other, position) => (other.position = position));
+      const position = view.indexOf(item);
+      if (position >= 0) {
+        view = view.filter((other) => other !== item);
+        if (position < rendered) rendered--;
+      }
+      feedCount.textContent = `${all.length.toLocaleString("cs-CZ")} kousků`;
+      renderTabs();
     }
 
     function toggleSound(video, button) {
@@ -726,31 +1101,31 @@
       if (turnOn) video.play().catch(() => {});
     }
 
-    async function sharePost(button, index) {
-      const url = `${location.origin}/osobni#p-${index}`;
+    async function sharePost(button, item) {
+      const url = `${location.origin}/osobni#${item.anchor}`;
       try {
         await navigator.clipboard.writeText(url);
         button.textContent = "zkopírováno";
       } catch {
-        history.replaceState(null, "", `#p-${index}`);
+        history.replaceState(null, "", `#${item.anchor}`);
         button.textContent = "odkaz je v adrese";
       }
       setTimeout(() => (button.textContent = "zkopírovat odkaz"), 1800);
     }
 
     function renderMore(upTo = rendered + BATCH) {
-      const end = Math.min(upTo, items.length);
+      const end = Math.min(upTo, view.length);
       const fragment = document.createDocumentFragment();
-      for (; rendered < end; rendered++) fragment.append(buildPost(items[rendered]));
+      for (; rendered < end; rendered++) fragment.append(buildPost(view[rendered]));
       feed.append(fragment);
       // Znovu sledovat, ať pozorovatel ohlásí stav i když sentinel zůstal v dosahu
       moreObserver.unobserve(sentinel);
-      if (rendered < items.length) {
+      if (rendered < view.length) {
         moreObserver.observe(sentinel);
       } else if (!document.querySelector(".feed-end")) {
         const done = document.createElement("p");
         done.className = "feed-end";
-        done.textContent = "Konec archivu. Nové kousky přibudou nahoře.";
+        done.textContent = tab === "vsichni" ? "Konec archivu. Nové kousky přibudou nahoře." : "Víc tu není.";
         feed.after(done);
       }
     }
@@ -759,16 +1134,36 @@
       if (entries.some((entry) => entry.isIntersecting)) renderMore();
     }, { rootMargin: "1400px 0px" });
 
+    async function refreshPosts() {
+      let posts = {};
+      try {
+        const response = await fetch("/osobni/prispevky");
+        if (response.ok) posts = await response.json();
+      } catch {}
+      me = posts.ja || null;
+      people = new Map((posts.lide || []).map((person) => [person.cislo, person]));
+      buildItems(posts);
+      addButton.hidden = !me;
+    }
+
     function loadFeed() {
       if (feedPromise) return feedPromise;
       feedPromise = fetch("/feed.json")
-        .then((response) => (response.ok ? response.json() : Promise.reject(new Error(response.status))))
-        .then((data) => {
-          items = (data.items || []).filter((item) => /^[A-Za-z0-9]+$/.test(item[1]));
-          document.getElementById("feed-count").textContent =
-            `${items.length.toLocaleString("cs-CZ")} kousků`;
-          renderMore(BATCH);
-          jumpToHash();
+        .then((response) => {
+          // Zamčeno: ukázat zámek, feed zkusíme znovu až po vpuštění
+          if (response.status === 401) return null;
+          return response.ok ? response.json() : Promise.reject(new Error(response.status));
+        })
+        .then(async (data) => {
+          if (!data) {
+            feedPromise = null;
+            showLock();
+            return;
+          }
+          hideLock();
+          archive = (data.items || []).filter((item) => /^[A-Za-z0-9]+$/.test(item[1]));
+          await refreshPosts();
+          openFromHash();
         })
         .catch(() => {
           feedPromise = null;
@@ -777,14 +1172,12 @@
       return feedPromise;
     }
 
-    // Odkaz na konkrétní kousek: /osobni#p-123
-    function jumpToHash() {
-      const match = /^#p-(\d+)$/.exec(location.hash);
-      if (!match || !items.length) return;
-      const position = items.findIndex((item) => item[0] === Number(match[1]));
+    // Odkaz na konkrétní kousek: /osobni#p-123 nebo /osobni#n-…
+    function jumpTo(anchor) {
+      const position = view.findIndex((item) => item.anchor === anchor);
       if (position < 0) return;
       if (position >= rendered) renderMore(position + 2);
-      const target = document.getElementById(`p-${items[position][0]}`);
+      const target = document.getElementById(anchor);
       target.scrollIntoView();
       // Média nad cílem se dočítají a posunou ho; jednou dorovnat, pokud uživatel sám nescrolluje
       let userMoved = false;
@@ -792,7 +1185,204 @@
       for (const type of ["wheel", "touchstart", "keydown"]) addEventListener(type, stop, { once: true, passive: true });
       setTimeout(() => !userMoved && target.scrollIntoView(), 900);
     }
-    addEventListener("hashchange", jumpToHash);
+
+    // ——— osobní: nový příspěvek (tlačítko dole) ———
+    const addButton = document.getElementById("add");
+    const addFile = document.getElementById("add-file");
+    const sheet = document.getElementById("sheet");
+    const sheetForm = document.getElementById("sheet-form");
+    const sheetPreview = document.getElementById("sheet-preview");
+    const sheetNameRow = document.getElementById("sheet-name-row");
+    const sheetError = document.getElementById("sheet-error");
+    const sheetProgress = document.getElementById("sheet-progress");
+    const sheetSubmit = document.getElementById("sheet-submit");
+    const UPLOAD_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4", "video/quicktime", "video/webm"];
+    const UPLOAD_LIMIT_MB = { image: 25, video: 95 };
+    const UPLOAD_ERRORS = {
+      401: "Přístup ti vypršel. Obnov stránku.",
+      413: "Soubor je moc velký.",
+      415: "Tenhle formát neumím. Pošli fotku (JPG, PNG, GIF, WebP) nebo video (MP4, MOV, WebM).",
+    };
+    let chosen = null;
+    let previewUrl = null;
+    let upload = null;
+
+    function fileProblem(file) {
+      if (!UPLOAD_TYPES.includes(file.type)) return UPLOAD_ERRORS[415];
+      const limit = UPLOAD_LIMIT_MB[file.type.startsWith("video/") ? "video" : "image"];
+      return file.size > limit * 1024 * 1024 ? `Soubor je moc velký. Limit je ${limit} MB.` : "";
+    }
+
+    function sheetMessage(text) {
+      sheetError.textContent = text;
+      sheetError.hidden = !text;
+    }
+
+    addButton.addEventListener("click", () => {
+      addFile.value = "";
+      addFile.click();
+    });
+
+    addFile.addEventListener("change", () => {
+      const file = addFile.files[0];
+      if (!file || !me) return;
+      chosen = file;
+      previewUrl = URL.createObjectURL(file);
+      const preview = file.type.startsWith("video/") ? document.createElement("video") : document.createElement("img");
+      if (preview.tagName === "VIDEO") Object.assign(preview, { muted: true, loop: true, autoplay: true, playsInline: true });
+      else preview.alt = "Náhled";
+      preview.src = previewUrl;
+      sheetPreview.replaceChildren(preview);
+      sheetForm.reset();
+      sheetNameRow.hidden = me.spravce;
+      sheetForm.elements.jmeno.required = !me.spravce;
+      sheetForm.elements.jmeno.value = me.jmeno || "";
+      sheetProgress.hidden = true;
+      const problem = fileProblem(file);
+      sheetMessage(problem);
+      sheetSubmit.disabled = Boolean(problem);
+      sheet.showModal();
+    });
+
+    sheetForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!chosen || upload) return;
+      const xhr = new XMLHttpRequest();
+      upload = xhr;
+      xhr.open("POST", "/osobni/prispevek");
+      xhr.setRequestHeader("content-type", chosen.type);
+      xhr.setRequestHeader("x-popisek", encodeURIComponent(sheetForm.elements.popisek.value.trim()));
+      if (!me.spravce) xhr.setRequestHeader("x-jmeno", encodeURIComponent(sheetForm.elements.jmeno.value.trim()));
+      xhr.upload.addEventListener("progress", (progress) => {
+        if (progress.lengthComputable) sheetProgress.value = progress.loaded / progress.total;
+      });
+      xhr.addEventListener("loadend", async () => {
+        upload = null;
+        sheetSubmit.textContent = "Zveřejnit";
+        if (xhr.status === 201) {
+          sheet.close();
+          await refreshPosts();
+          history.replaceState(null, "", "#vsichni");
+          showTab("vsichni");
+          scrollTo(0, 0);
+          return;
+        }
+        sheetSubmit.disabled = false;
+        sheetProgress.hidden = true;
+        if (xhr.status) sheetMessage(UPLOAD_ERRORS[xhr.status] || "Nahrání se nepovedlo. Zkus to znovu.");
+      });
+      sheetMessage("");
+      sheetProgress.value = 0;
+      sheetProgress.hidden = false;
+      sheetSubmit.disabled = true;
+      sheetSubmit.textContent = "Nahrávám…";
+      xhr.send(chosen);
+    });
+
+    document.getElementById("sheet-cancel").addEventListener("click", () => sheet.close());
+    sheet.addEventListener("close", () => {
+      upload?.abort();
+      chosen = null;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      sheetPreview.replaceChildren();
+    });
+
+    // ——— osobní: zámek a žádost o přístup e-mailem ———
+    const lock = document.getElementById("lock");
+    const lockAsk = document.getElementById("lock-ask");
+    const lockWait = document.getElementById("lock-wait");
+    const lockCopy = document.getElementById("lock-copy");
+    const MAIL_TO = "daniel@indigostudio.cz";
+    const POLL_MS = 15000;
+    let requestId = null;
+    let pollTimer = null;
+
+    function newRequestId() {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+
+    function requestMail(id) {
+      const subject = "Pustíš mě do fakan.cz/osobni?";
+      const body = [
+        "Ahoj Dane,",
+        "",
+        "pustíš mě do osobní části fakan.cz?",
+        "",
+        "(napiš, kdo jsi a odkud se známe)",
+        "",
+        "--",
+        "Odkaz pro Dana, kterým mě pustí dál:",
+        `${location.origin}/pustit/${id}`,
+        "",
+      ].join("\r\n");
+      return { subject, body };
+    }
+
+    function setRequest(id) {
+      requestId = id;
+      const { subject, body } = requestMail(id);
+      lockAsk.href = `mailto:${MAIL_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    async function showLock() {
+      lock.hidden = false;
+      let state = {};
+      try {
+        state = await fetch("/osobni/stav").then((response) => response.json());
+      } catch {}
+      if (state.pristup) return unlock();
+      setRequest(state.zadost || requestId || newRequestId());
+      if (state.zadost) showWaiting();
+    }
+
+    function hideLock() {
+      lock.hidden = true;
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
+    function showWaiting() {
+      lockWait.hidden = false;
+      if (!pollTimer) pollTimer = setInterval(checkAccess, POLL_MS);
+    }
+
+    async function checkAccess() {
+      if (document.hidden || root.dataset.mode !== "osobni") return;
+      try {
+        const state = await fetch("/osobni/stav").then((response) => response.json());
+        if (state.pristup) unlock();
+      } catch {}
+    }
+
+    function unlock() {
+      hideLock();
+      loadFeed();
+    }
+
+    // Odkaz otevře e-mail sám; prohlížeč si mezitím zapamatuje id žádosti
+    lockAsk.addEventListener("click", () => {
+      fetch("/osobni/zadost", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ zadost: requestId }),
+        keepalive: true,
+      }).catch(() => {});
+      showWaiting();
+    });
+
+    lockCopy.addEventListener("click", async () => {
+      const { subject, body } = requestMail(requestId);
+      try {
+        await navigator.clipboard.writeText(`Komu: ${MAIL_TO}\nPředmět: ${subject}\n\n${body.replace(/\r\n/g, "\n")}`);
+        lockCopy.textContent = "zkopírováno";
+      } catch {
+        lockCopy.textContent = "kopírování nejde, odkaz je v tlačítku výš";
+      }
+      setTimeout(() => (lockCopy.textContent = "zkopírovat text"), 2400);
+    });
+    document.addEventListener("visibilitychange", () => !lock.hidden && checkAccess());
 
     applyMode(modeFromPath(), false);
   </script>
