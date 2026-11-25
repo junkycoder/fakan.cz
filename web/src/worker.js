@@ -109,6 +109,7 @@ export default {
       if (!(await hasAccess(request, env))) return locked();
       const name = decodeURIComponent(url.pathname.slice(3));
       if (!MEDIA_NAME.test(name)) return new Response("Not Found", { status: 404 });
+      if ((await removedArchive(env)).has(Number(name.slice(0, 4)))) return new Response("Not Found", { status: 404 });
       return serveMedia(request, env.MEDIA, MEDIA_PREFIX + name);
     }
 
@@ -132,6 +133,7 @@ export default {
     if (url.pathname === "/osobni/prispevek") return createPost(request, env, url);
     if (url.pathname.startsWith("/osobni/prispevek/")) return deletePost(request, env, url, url.pathname.slice(18));
     if (url.pathname === "/osobni/hlas") return vote(request, env, url);
+    if (url.pathname === "/osobni/archiv") return removeArchive(request, env, url);
     if (url.pathname.startsWith("/p/")) return sharedPost(request, env, url);
     if (url.pathname.startsWith("/pustit/")) return approvePage(request, env, url, url.pathname.slice(8));
     if (url.pathname === "/spravce") return adminPage(request, env, url);
@@ -333,7 +335,7 @@ async function findShared(env, url, id) {
     archiveIndex = new Map(items.map((item) => [item[1], item]));
   }
   const item = archiveIndex.get(id);
-  if (!item) return null;
+  if (!item || (await removedArchive(env)).has(item[0])) return null;
   const [index, , kind, ext] = item;
   const extension = ext || (kind === "v" ? "mp4" : "jpg");
   return {
@@ -446,13 +448,14 @@ function sharePage(url, post, status = 200) {
 async function listPosts(request, env) {
   const me = await member(request, env);
   if (!me) return locked();
-  const [posts, votes, people] = await env.DB.batch([
+  const [posts, votes, people, removed] = await env.DB.batch([
     env.DB.prepare(
       `SELECT p.key, p.kind, p.caption, p.created_at, m.rowid AS author, p.author_id = ?1 AS own
        FROM posts p JOIN members m ON m.id = p.author_id ORDER BY p.created_at DESC`,
     ).bind(me.id),
     env.DB.prepare("SELECT post, COUNT(*) AS n, MAX(voter = ?1) AS mine FROM votes GROUP BY post").bind(me.id),
     env.DB.prepare("SELECT rowid AS num, name, id = ?1 AS dan FROM members ORDER BY rowid").bind(ADMIN_ID),
+    env.DB.prepare("SELECT num FROM archive_removed"),
   ]);
   return json({
     ja: { cislo: me.num, jmeno: me.name, spravce: me.admin },
@@ -462,7 +465,38 @@ async function listPosts(request, env) {
     })),
     hlasy: Object.fromEntries(votes.results.map((row) => [row.post, [row.n, Boolean(row.mine)]])),
     lide: people.results.map((row) => ({ cislo: row.num, jmeno: row.name, dan: Boolean(row.dan) })),
+    smazane: removed.results.map((row) => row.num),
   });
+}
+
+// POST /osobni/archiv {cislo, smazat} — Dan maže (a vrací) kousky archivu 9GAG.
+// Jen z feedu: soubory v R2 justpost-media zůstávají, patří aplikaci just post.
+async function removeArchive(request, env, url) {
+  if (request.method !== "POST") return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
+  if (!sameOrigin(request, url)) return json({ chyba: "origin" }, 403);
+  const me = await member(request, env);
+  if (!me) return locked();
+  if (!me.admin) return json({ chyba: "jen-dan" }, 403);
+  const body = await request.json().catch(() => ({}));
+  const num = Number(body.cislo);
+  if (!Number.isInteger(num) || num < 1 || num > 9999) return json({ chyba: "cislo" }, 400);
+  await env.DB.batch(body.smazat === false
+    ? [env.DB.prepare("DELETE FROM archive_removed WHERE num = ?").bind(num)]
+    : [
+      env.DB.prepare("INSERT OR IGNORE INTO archive_removed (num, removed_at) VALUES (?, ?)").bind(num, Date.now()),
+      env.DB.prepare("DELETE FROM votes WHERE post = ?").bind(`a:${num}`),
+    ]);
+  removedCache = null;
+  return json({ ok: true, smazano: body.smazat !== false });
+}
+
+// Smazané kousky archivu, v paměti isolate nejvýš na 30 s (média se ptají často)
+let removedCache = null;
+async function removedArchive(env) {
+  if (removedCache && Date.now() - removedCache.at < 30_000) return removedCache.set;
+  const rows = (await env.DB.prepare("SELECT num FROM archive_removed").all()).results;
+  removedCache = { at: Date.now(), set: new Set(rows.map((row) => row.num)) };
+  return removedCache.set;
 }
 
 // POST /osobni/prispevek — tělo je samotný soubor, popisek a jméno v hlavičkách

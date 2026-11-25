@@ -59,6 +59,8 @@ Jedna stránka s přepínačem **profesní / osobní** (`/` a `/osobni`), Worker
   memu). Kdo nemá přístup, uvidí jen ten kousek a pozvánku dovnitř; vpuštěný skončí ve feedu.
   Id je 9GAG id nebo náhodný klíč příspěvku, ne pořadové číslo, takže se přes `/p/` nedá projít feed.
 - Osobní část i stránky pro mě jsou světlé nebo tmavé podle systému.
+- Kousky z archivu 9GAG můžu z feedu smazat (bez ptaní, s vrácením). Maže se jen z feedu
+  (D1 `archive_removed`), soubory v R2 `justpost-media` zůstávají.
 - Data: lidé, příspěvky a hlasy v D1 `fakan-feed` (schéma v `web/migrations/`), média nových
   příspěvků v R2 `fakan-feed`. Archiv 1 864 mých upvotů je v `web/public/feed.json`, média čte
   Worker z R2 `justpost-media` (`posts/imported/`), jen čtení.

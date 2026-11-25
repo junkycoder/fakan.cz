@@ -415,6 +415,17 @@
     .post-actions .vote { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
     .post-actions .vote[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--bg); }
     .post-actions .post-delete { margin-left: auto; color: var(--muted); }
+    .post-removed { margin: 0; padding: 4px 16px; color: var(--muted); font-size: 14px; }
+    .post-removed button {
+      margin-left: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--fg);
+      font: 500 13px/1 var(--sans);
+      cursor: pointer;
+    }
     .feed-empty { padding: 28px 16px; border-top: 1px solid var(--line); color: var(--muted); }
 
     /* ——— osobní: přidat příspěvek ——— */
@@ -533,7 +544,7 @@
 
     @media (min-width: 640px) {
       .media { border-radius: 10px; }
-      .feed-head, .post-head, .post-actions, .post-caption { padding-left: 0; padding-right: 0; }
+      .feed-head, .post-head, .post-actions, .post-caption, .post-removed { padding-left: 0; padding-right: 0; }
       .tabs { margin-left: -8px; margin-right: -8px; padding-left: 8px; padding-right: 8px; }
       .lock { margin-left: 0; margin-right: 0; }
     }
@@ -629,6 +640,7 @@
           <button class="post-delete" type="button" hidden>smazat</button>
         </footer>
       </article>
+      <p class="post-removed" hidden>Smazáno z&nbsp;feedu. <button type="button">vrátit</button></p>
     </li>
   </template>
 
@@ -873,14 +885,15 @@
       });
       // Archiv jsou moje upvoty z 9GAG, patří do mého tabu
       const dan = [...people.values()].find((person) => person.dan)?.cislo ?? 1;
-      const old = archive.map(([index, id, kind, ext]) => {
+      const removed = new Set(posts.smazane || []);
+      const old = archive.filter(([index]) => !removed.has(index)).map(([index, id, kind, ext]) => {
         const ref = `a:${index}`;
         const [count, mine] = voteOf(ref);
         return {
           ref, anchor: `p-${index}`, num: index, gag: id, kind, share: id,
           src: `/m/${String(index).padStart(4, "0")}_${id}.${ext || (kind === "v" ? "mp4" : "jpg")}`,
           file: `fakan-${index}.${ext || (kind === "v" ? "mp4" : "jpg")}`,
-          author: dan, caption: "", time: null, own: false, votes: count, voted: mine,
+          author: dan, caption: "", time: null, own: Boolean(me?.spravce), votes: count, voted: mine,
         };
       });
       all = [...fresh, ...old];
@@ -909,12 +922,13 @@
     }
 
     function itemsFor(id) {
+      const shown = all.filter((item) => !item.removed);
       if (id === "nejlepsi") {
-        return all.filter((item) => item.votes >= TOP_MIN).sort((a, b) => b.votes - a.votes || a.position - b.position);
+        return shown.filter((item) => item.votes >= TOP_MIN).sort((a, b) => b.votes - a.votes || a.position - b.position);
       }
-      if (id === "vsichni") return all;
+      if (id === "vsichni") return shown;
       const num = Number(id.slice(1));
-      return all.filter((item) => item.author === num);
+      return shown.filter((item) => item.author === num);
     }
 
     function defaultTab() {
@@ -1013,10 +1027,11 @@
       const voteButton = post.querySelector(".vote");
       paintVote(voteButton, item);
       voteButton.addEventListener("click", () => toggleVote(voteButton, item));
-      if (item.own && item.key) {
+      if (item.own) {
         const remove = post.querySelector(".post-delete");
         remove.hidden = false;
         remove.addEventListener("click", () => removePost(post, item));
+        post.querySelector(".post-removed button").addEventListener("click", () => removeArchived(post, item, false));
       }
 
       const label = item.num ? `z archivu 9GAG, kousek ${item.num}` : `od ${author}`;
@@ -1102,6 +1117,8 @@
     }
 
     async function removePost(post, item) {
+      // Archiv 9GAG maže jen Dan a jen z feedu: bez ptaní, sbalí se na řádek s vrácením
+      if (!item.key) return removeArchived(post, item, true);
       if (!confirm("Smazat tenhle příspěvek? Vrátit to nejde.")) return;
       const response = await fetch(`/osobni/prispevek/${encodeURIComponent(item.key)}`, { method: "DELETE" }).catch(() => null);
       if (!response?.ok) {
@@ -1109,15 +1126,42 @@
         return;
       }
       post.remove();
-      all = all.filter((other) => other !== item);
-      all.forEach((other, position) => (other.position = position));
+      forget(item);
       const position = view.indexOf(item);
       if (position >= 0) {
         view = view.filter((other) => other !== item);
         if (position < rendered) rendered--;
       }
-      feedCount.textContent = `${all.length.toLocaleString("cs-CZ")} kousků`;
       renderTabs();
+    }
+
+    async function removeArchived(post, item, remove) {
+      const article = post.querySelector("article");
+      const notice = post.querySelector(".post-removed");
+      post.querySelectorAll("video").forEach((video) => video.pause());
+      // Hned schovat, ať jde archiv procházet rychle; při chybě vrátit
+      article.hidden = remove;
+      notice.hidden = !remove;
+      const response = await fetch("/osobni/archiv", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ cislo: item.num, smazat: remove }),
+      }).catch(() => null);
+      if (!response?.ok) {
+        article.hidden = !remove;
+        notice.hidden = remove;
+        alert(remove ? "Smazání se nepovedlo. Zkus to znovu." : "Vrácení se nepovedlo. Zkus to znovu.");
+        return;
+      }
+      item.removed = remove;
+      feedCount.textContent = `${all.filter((other) => !other.removed).length.toLocaleString("cs-CZ")} kousků`;
+    }
+
+    // Smazaný nový příspěvek zmizí ze všech seznamů
+    function forget(item) {
+      all = all.filter((other) => other !== item);
+      all.forEach((other, position) => (other.position = position));
+      feedCount.textContent = `${all.filter((other) => !other.removed).length.toLocaleString("cs-CZ")} kousků`;
     }
 
     function toggleSound(video, button) {
