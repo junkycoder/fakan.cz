@@ -394,135 +394,131 @@ function header(request, name) {
   }
 }
 
-// /pustit/<id> — odkaz z oznámení. Dan vybere, kdo to je (nový člověk, někdo známý,
-// nebo on sám) a potvrdí; poprvé na daném zařízení i heslem.
+// /pustit/<id> — odkaz z oznámení. Nepřihlášeného Dana pošle nejdřív na přihlášení,
+// pak Dan vybere, kdo to je (nový člověk, někdo známý, nebo on sám), a potvrdí.
 async function approvePage(request, env, url, id) {
   if (!REQUEST_ID.test(id)) return page("Neplatný odkaz", "<p>Tenhle odkaz nevede na žádnou žádost.</p>", 404);
   if (!env.PODPIS_KLIC || !env.SPRAVCE_KLIC) {
     return page("Zámek není nastavený", "<p>Chybí klíče <code>PODPIS_KLIC</code> a <code>SPRAVCE_KLIC</code> ve Workeru.</p>", 503);
   }
-  const cookies = readCookies(request);
-  let admin = await isAdmin(cookies, env);
-  const headers = new Headers();
+  if (!(await isAdmin(readCookies(request), env))) {
+    if (request.method !== "GET" && request.method !== "HEAD") return page("Nepovoleno", "<p>Nejdřív se přihlas.</p>", 403);
+    return loginPage(`/pustit/${id}`, "<p>Někdo tě prosí o&nbsp;přístup do osobní části fakan.cz. Přihlas se a uvidíš, kdo to je.</p>");
+  }
+
+  const sender = await env.DB.prepare(
+    "SELECT r.email, r.name, r.verified, e.member_id FROM requests r LEFT JOIN emails e ON e.email = r.email WHERE r.id = ?",
+  ).bind(id).first();
+  // Jméno do tabu se nepíše: vezme se křestní jméno z e-mailu, změnit si ho může sám
+  const newName = (sender?.name || "").split(" ")[0].slice(0, MAX_NAME);
   let error = "";
 
   if (request.method === "POST") {
     if (!sameOrigin(request, url)) return page("Nepovoleno", "<p>Formulář musí přijít z fakan.cz.</p>", 403);
     const form = await request.formData().catch(() => new FormData());
-    if (!admin && (await passwordMatches(String(form.get("klic") || ""), env.SPRAVCE_KLIC))) {
-      admin = true;
-      headers.append("set-cookie", cookie(COOKIE.admin, await sign(env, "spravce"), 365 * DAY));
-    } else if (!admin) {
-      error = '<p class="error" role="alert">Heslo nesedí.</p>';
-    }
-    if (admin) {
-      const choice = String(form.get("kdo") || "novy");
-      const existing = choice === "novy"
-        ? null
-        : await env.DB.prepare("SELECT id, name FROM members WHERE rowid = ?").bind(Number(choice) || 0).first();
-      if (choice !== "novy" && !existing) {
-        error = '<p class="error" role="alert">Tohoto člověka už nenacházím. Vyber znovu.</p>';
-      } else {
-        const memberId = existing ? existing.id : id;
-        const statements = [];
-        if (!existing) {
-          const name = String(form.get("jmeno") || "").replace(/\s+/g, " ").trim().slice(0, MAX_NAME);
-          statements.push(env.DB.prepare("INSERT INTO members (id, name, approved_at) VALUES (?, ?, ?) ON CONFLICT (id) DO NOTHING")
-            .bind(id, name, Date.now()));
-        }
-        statements.push(approveDevice(env, id, memberId, false));
-        // Ověřenou adresu si zapamatujeme: příští zařízení z ní projde samo
-        statements.push(env.DB.prepare(
-          `INSERT INTO emails (email, member_id, added_at)
-           SELECT email, ?, ? FROM requests WHERE id = ? AND verified = 1
-           ON CONFLICT (email) DO UPDATE SET member_id = excluded.member_id`,
-        ).bind(memberId, Date.now(), id));
-        await env.DB.batch(statements);
-        const remembered = await env.DB.prepare("SELECT 1 FROM requests WHERE id = ? AND verified = 1").bind(id).first();
-        const next = remembered ? "<p>Jeho adresu si pamatuju, další zařízení z ní pustím sám.</p>" : "";
-        const done = memberId === ADMIN_ID
-          ? `<p>Hotovo, tohle zařízení je tvoje. Jestli máš fakan.cz/osobni otevřené, feed se během chvíle načte sám.</p>${next.replace("jeho", "tvoji")}`
-          : `<p>Hotovo, pustil jsi ho dál. Jestli má fakan.cz/osobni otevřené, feed se mu během chvíle načte sám.
-             Jinak ho uvidí, až se vrátí ve stejném prohlížeči.</p>${next}`;
-        return page(memberId === ADMIN_ID ? "Jsi uvnitř" : "Je vpuštěný", `${done}<p class="muted">Žádost ${id}</p>`, 200, headers);
+    const choice = String(form.get("kdo") || "novy");
+    const existing = choice === "novy"
+      ? null
+      : await env.DB.prepare("SELECT id, name FROM members WHERE rowid = ?").bind(Number(choice) || 0).first();
+    if (choice !== "novy" && !existing) {
+      error = '<p class="error" role="alert">Tohoto člověka už nenacházím. Vyber znovu.</p>';
+    } else {
+      const memberId = existing ? existing.id : id;
+      const statements = [];
+      if (!existing) {
+        statements.push(env.DB.prepare("INSERT INTO members (id, name, approved_at) VALUES (?, ?, ?) ON CONFLICT (id) DO NOTHING")
+          .bind(id, newName, Date.now()));
       }
+      statements.push(approveDevice(env, id, memberId, false));
+      // Ověřenou adresu si zapamatujeme: příští zařízení z ní projde samo
+      statements.push(env.DB.prepare(
+        `INSERT INTO emails (email, member_id, added_at)
+         SELECT email, ?, ? FROM requests WHERE id = ? AND verified = 1
+         ON CONFLICT (email) DO UPDATE SET member_id = excluded.member_id`,
+      ).bind(memberId, Date.now(), id));
+      await env.DB.batch(statements);
+      const remembered = sender?.verified
+        ? `<p>${memberId === ADMIN_ID ? "Tvoji" : "Jeho"} adresu si pamatuju, další zařízení z&nbsp;ní pustím sám.</p>`
+        : "";
+      const done = memberId === ADMIN_ID
+        ? "<p>Hotovo, tohle zařízení je tvoje. Jestli máš fakan.cz/osobni otevřené, feed se během chvíle načte sám.</p>"
+        : `<p>Hotovo, pustil jsi ho dál. Jestli má fakan.cz/osobni otevřené, feed se mu během chvíle načte sám.
+           Jinak ho uvidí, až se vrátí ve stejném prohlížeči.</p>`;
+      return page(memberId === ADMIN_ID ? "Jsi uvnitř" : "Je vpuštěný", `${done}${remembered}<p class="muted">Žádost ${id}</p>`);
     }
   } else if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method Not Allowed", { status: 405, headers: { allow: "GET, POST" } });
   }
 
-  if (admin) {
-    const approved = await env.DB.prepare(
-      "SELECT m.name, m.id FROM devices d JOIN members m ON m.id = d.member_id WHERE d.id = ?",
-    ).bind(id).first();
-    if (approved) {
-      const who = approved.id === ADMIN_ID ? "tvoje zařízení" : escapeHtml(approved.name || "host");
-      return page("Už je vpuštěný", `<p>Tuhle žádost už máš vyřízenou: ${who}.</p><p class="muted">Žádost ${id}</p>`);
-    }
+  const approved = await env.DB.prepare(
+    "SELECT m.name, m.id FROM devices d JOIN members m ON m.id = d.member_id WHERE d.id = ?",
+  ).bind(id).first();
+  if (approved) {
+    const who = approved.id === ADMIN_ID ? "tvoje zařízení" : escapeHtml(approved.name || "host");
+    return page("Už je vpuštěný", `<p>Tuhle žádost už máš vyřízenou: ${who}.</p><p class="muted">Žádost ${id}</p>`);
   }
-  // Od koho žádost je, víme jen když prošla přes jsem@fakan.cz; Danovi to ukážeme až po přihlášení
-  const sender = admin
-    ? await env.DB.prepare(
-      "SELECT r.email, r.name, r.verified, e.member_id FROM requests r LEFT JOIN emails e ON e.email = r.email WHERE r.id = ?",
-    ).bind(id).first()
-    : null;
-  const people = admin ? (await env.DB.prepare("SELECT rowid AS num, id, name FROM members ORDER BY rowid").all()).results : [];
+  const people = (await env.DB.prepare("SELECT rowid AS num, id, name FROM members ORDER BY rowid").all()).results;
   const from = sender
     ? `<p>Žádost poslal <b>${escapeHtml(sender.name || sender.email)}</b>${sender.name ? ` <span class="muted">${escapeHtml(sender.email)}</span>` : ""}.</p>
        ${sender.verified ? "" : '<p class="error">Adresu odesílatele se nepodařilo ověřit (chybí platný podpis DKIM), mohl ji někdo podvrhnout. Pusť ho, jen když víš, že je to on.</p>'}`
     : "<p>Někdo tě prosí o přístup do osobní části fakan.cz. Kdo to je, vidíš v&nbsp;e-mailu, ze kterého jsi přišel.</p>";
   // Předvybrat jen u ověřené adresy, podvržená nesmí nabídnout cizí účet
   const preselect = sender?.verified ? sender.member_id : null;
-  const options = [
-    `<option value="novy"${preselect ? "" : " selected"}>nový člověk</option>`,
-    ...people.map((person) => `<option value="${person.num}"${person.id === preselect ? " selected" : ""}>${
-      person.id === ADMIN_ID ? "já (fakan)" : escapeHtml(person.name || "host")}</option>`),
+  const choice = (value, label, checked) =>
+    `<label class="choice"><input type="radio" name="kdo" value="${value}"${checked ? " checked" : ""}><span>${label}</span></label>`;
+  const choices = [
+    choice("novy", `nový člověk${newName ? ` <span class="muted">(v&nbsp;tabu jako ${escapeHtml(newName)})</span>` : ""}`, !preselect),
+    ...people
+      .sort((a, b) => (b.id === ADMIN_ID) - (a.id === ADMIN_ID))
+      .map((person) => choice(person.num, person.id === ADMIN_ID ? "já (fakan)" : escapeHtml(person.name || "host"), person.id === preselect)),
   ].join("");
-  const password = admin ? "" : `
-      <input type="text" name="username" value="dan" autocomplete="username" hidden>
-      <label>Tvoje heslo pro fakan.cz
-        <input type="password" name="klic" autocomplete="current-password" required autofocus></label>`;
-  const choose = admin ? `
-      <label><span>Kdo to je</span>
-        <select name="kdo">${options}</select></label>` : '<input type="hidden" name="kdo" value="novy">';
   return page("Pustit dál?", `
     ${from}
     ${error}
-    <form method="post">${password}${choose}
-      <label><span>Jméno nového člověka <span class="muted">(v&nbsp;tabu, může si ho změnit)</span></span>
-        <input type="text" name="jmeno" maxlength="${MAX_NAME}" placeholder="např. Petr" autocomplete="off"
-          value="${escapeHtml(sender?.name?.split(" ")[0] || "")}"></label>
+    <form method="post">
+      <fieldset><legend>Kdo to je</legend>${choices}</fieldset>
       <button type="submit">Pustit dál</button>
     </form>
-    <p class="muted">Když ho pustit nechceš, stačí stránku zavřít. Žádost ${id}</p>`, error ? 403 : 200, headers);
+    <p class="muted">Když ho pustit nechceš, stačí stránku zavřít. Žádost ${id}</p>`, error ? 400 : 200);
 }
 
-// /spravce — Dan se přihlásí a má přístup k feedu i bez žádosti
+// Přihlašovací formulář, jak ho poznají iOS a správci hesel: viditelný uživatel + heslo
+function loginPage(next, intro = "", error = "", status = 200) {
+  return page("Přihlášení", `
+    ${intro}
+    ${error}
+    <form method="post" action="/spravce">
+      <input type="hidden" name="dalsi" value="${escapeHtml(next)}">
+      <label><span>Uživatel</span>
+        <input type="text" name="username" value="dan" autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+      <label><span>Heslo</span>
+        <input type="password" name="klic" autocomplete="current-password" required></label>
+      <button type="submit">Přihlásit</button>
+    </form>`, status);
+}
+
+// /spravce — Dan se přihlásí (a vrátí se, odkud přišel) a má přístup k feedu i bez žádosti
 async function adminPage(request, env, url) {
   if (!env.PODPIS_KLIC || !env.SPRAVCE_KLIC) {
     return page("Zámek není nastavený", "<p>Chybí klíče <code>PODPIS_KLIC</code> a <code>SPRAVCE_KLIC</code> ve Workeru.</p>", 503);
   }
-  let error = "";
   if (request.method === "POST") {
     if (!sameOrigin(request, url)) return page("Nepovoleno", "<p>Formulář musí přijít z fakan.cz.</p>", 403);
     const form = await request.formData().catch(() => new FormData());
+    // Vrátit jen na vlastní stránky, ne na libovolnou adresu
+    const requested = String(form.get("dalsi") || "");
+    const next = /^\/(pustit\/[A-Za-z0-9_-]{22}|osobni)$/.test(requested) ? requested : "/osobni";
     if (await passwordMatches(String(form.get("klic") || ""), env.SPRAVCE_KLIC)) {
-      const headers = new Headers({ location: "/osobni" });
+      const headers = new Headers({ location: next });
       headers.append("set-cookie", cookie(COOKIE.admin, await sign(env, "spravce"), 365 * DAY));
       return new Response(null, { status: 303, headers });
     }
-    error = '<p class="error" role="alert">Heslo nesedí.</p>';
-  } else if (await isAdmin(readCookies(request), env)) {
+    return loginPage(next, "", '<p class="error" role="alert">Heslo nesedí.</p>', 403);
+  }
+  if (await isAdmin(readCookies(request), env)) {
     return page("Jsi přihlášený", '<p>Na tomhle zařízení máš přístup. <a href="/osobni">Do feedu</a></p>');
   }
-  return page("Přihlášení", `
-    ${error}
-    <form method="post">
-      <input type="text" name="username" value="dan" autocomplete="username" hidden>
-      <label>Heslo pro fakan.cz
-        <input type="password" name="klic" autocomplete="current-password" required autofocus></label>
-      <button type="submit">Přihlásit</button>
-    </form>`, error ? 403 : 200);
+  return loginPage("/osobni");
 }
 
 function page(title, body, status = 200, headers = new Headers()) {
@@ -530,7 +526,8 @@ function page(title, body, status = 200, headers = new Headers()) {
   headers.set("cache-control", "no-store");
   headers.set("x-robots-tag", "noindex");
   headers.set("content-security-policy", ADMIN_CSP);
-  headers.set("referrer-policy", "no-referrer");
+  // same-origin: adresa s id žádosti neodejde jinam, ale formulář dostane Origin (u no-referrer by byl "null")
+  headers.set("referrer-policy", "same-origin");
   headers.set("x-content-type-options", "nosniff");
   const html = `<!doctype html>
 <html lang="cs">
@@ -540,14 +537,23 @@ function page(title, body, status = 200, headers = new Headers()) {
   <title>${title} · fakan</title>
   <style>
     :root { color-scheme: dark; }
-    body { margin: 0; min-height: 100dvh; display: grid; place-items: center; background: #000; color: #f2f2f2;
-      font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
-    main { width: min(420px, 100% - 32px); padding: 28px; border: 1px solid #232327; border-radius: 14px; background: #0b0b0d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 16px;
+      background: #000; color: #f2f2f2; font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { width: 100%; max-width: 440px; padding: 24px; border: 1px solid #232327; border-radius: 14px; background: #0b0b0d;
+      overflow-wrap: anywhere; }
     h1 { margin: 0 0 12px; font-size: 22px; letter-spacing: -.01em; }
     p { margin: 0 0 14px; }
     a { color: #b899ff; }
     label { display: grid; gap: 6px; margin-bottom: 14px; font-size: 14px; color: #c9c9cf; }
-    input, select { padding: 11px 12px; border: 1px solid #34343a; border-radius: 9px; background: #000; color: inherit; font: inherit; }
+    input[type="text"], input[type="password"] { width: 100%; padding: 11px 12px; border: 1px solid #34343a; border-radius: 9px;
+      background: #000; color: inherit; font: inherit; }
+    fieldset { margin: 0 0 16px; padding: 0; border: 0; }
+    legend { margin-bottom: 8px; padding: 0; font-size: 14px; color: #c9c9cf; }
+    .choice { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; padding: 13px 14px; border: 1px solid #34343a;
+      border-radius: 10px; color: #f2f2f2; font-size: 16px; cursor: pointer; }
+    .choice:has(input:checked) { border-color: #b899ff; background: #17132a; }
+    .choice input { width: 20px; height: 20px; margin: 0; accent-color: #b899ff; flex: none; }
     button { width: 100%; padding: 12px 16px; border: 0; border-radius: 10px; background: #f2f2f2; color: #000;
       font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1; cursor: pointer; }
     form { margin: 0 0 14px; }

@@ -70,8 +70,9 @@
     @keyframes enter { from { opacity: 0; translate: 0 10px; } }
 
     /* ——— přepínač profesní / osobní ——— */
+    /* Přepínač je jen nahoře stránky, při posouvání odjede a nezakrývá feed */
     .switch {
-      position: fixed;
+      position: absolute;
       z-index: 30;
       top: max(14px, env(safe-area-inset-top));
       left: 50%;
@@ -295,7 +296,7 @@
     .feed-head h1 { margin: 0; font: 700 26px/1.1 var(--sans); letter-spacing: -.02em; }
     .feed-head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
     .feed { margin: 0; padding: 0; list-style: none; }
-    .post { padding: 18px 0 20px; border-top: 1px solid var(--line); scroll-margin-top: 72px; }
+    .post { padding: 18px 0 20px; border-top: 1px solid var(--line); scroll-margin-top: calc(60px + env(safe-area-inset-top)); }
     .post-head { display: flex; align-items: center; gap: 9px; padding: 0 16px 12px; font-size: 13px; }
     .avatar {
       display: grid; place-items: center;
@@ -362,7 +363,7 @@
     .tabs {
       position: sticky;
       z-index: 20;
-      top: calc(max(14px, env(safe-area-inset-top)) + 46px);
+      top: env(safe-area-inset-top);
       display: flex;
       gap: 4px;
       margin: 0 0 6px;
@@ -374,6 +375,15 @@
       backdrop-filter: blur(12px);
     }
     .tabs::-webkit-scrollbar { display: none; }
+    /* Pod stavovým řádkem iPhonu (viewport-fit=cover) neprosvítá feed */
+    html[data-mode="osobni"] body::before {
+      content: "";
+      position: fixed;
+      z-index: 40;
+      inset: 0 0 auto;
+      height: env(safe-area-inset-top);
+      background: var(--bg);
+    }
     .tabs:empty { display: none; }
     .tabs a {
       flex: none;
