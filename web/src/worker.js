@@ -132,6 +132,7 @@ export default {
     if (url.pathname === "/osobni/prispevek") return createPost(request, env, url);
     if (url.pathname.startsWith("/osobni/prispevek/")) return deletePost(request, env, url, url.pathname.slice(18));
     if (url.pathname === "/osobni/hlas") return vote(request, env, url);
+    if (url.pathname.startsWith("/p/")) return sharedPost(request, env, url);
     if (url.pathname.startsWith("/pustit/")) return approvePage(request, env, url, url.pathname.slice(8));
     if (url.pathname === "/spravce") return adminPage(request, env, url);
 
@@ -281,6 +282,162 @@ async function storeRequest(request, env, url) {
   const response = json({ ok: true });
   response.headers.append("set-cookie", cookie(COOKIE.request, body.zadost, 90 * DAY));
   return response;
+}
+
+// ——— sdílený kousek: fakan.cz/p/<id> ———
+// Veřejná stránka jednoho memu s OG náhledem (WhatsApp, iMessage, Messenger…).
+// Id je 9GAG id (archiv) nebo náhodný klíč nového příspěvku, ne pořadové číslo,
+// takže se přes /p/ nedá projít celý feed. Kdo má přístup, skončí rovnou ve feedu.
+
+const SHARE_ID = /^([A-Za-z0-9]{5,12}|[a-z0-9]{8,10}-[A-Za-z0-9_-]{8})$/;
+const PUBLIC_CSP =
+  "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'";
+let archiveIndex = null;
+
+async function sharedPost(request, env, url) {
+  const [, , id, part, extra] = url.pathname.split("/");
+  if (!SHARE_ID.test(id || "") || extra !== undefined || (part !== undefined && part !== "media")) {
+    return new Response("Not Found", { status: 404 });
+  }
+  const post = await findShared(env, url, id);
+  if (!post) return sharePage(url, null, 404);
+
+  if (part === "media") {
+    const response = await serveMedia(request, post.bucket, post.key);
+    if (response.status === 200 || response.status === 206) response.headers.set("cache-control", "public, max-age=86400");
+    return response;
+  }
+  // Vpuštěný člověk patří do feedu, rovnou k tomu kousku
+  if (await hasAccess(request, env)) return Response.redirect(new URL(`/osobni#${post.anchor}`, url), 302);
+  return sharePage(url, { ...post, id });
+}
+
+async function findShared(env, url, id) {
+  if (id.includes("-")) {
+    const keys = Object.values(UPLOAD_TYPES).map(([ext]) => `${id}.${ext}`);
+    const row = await env.DB.prepare(
+      `SELECT p.key, p.kind, p.content_type, p.caption, m.name, m.id AS member FROM posts p JOIN members m ON m.id = p.author_id
+       WHERE p.key IN (${keys.map(() => "?").join(", ")})`,
+    ).bind(...keys).first();
+    if (!row) return null;
+    return {
+      bucket: env.FEED, key: `n/${row.key}`, kind: row.kind, type: row.content_type, caption: row.caption,
+      author: row.member === ADMIN_ID ? "fakan" : row.name || "host", anchor: `n-${id}`,
+      meta: row.member === ADMIN_ID ? "" : `od ${row.name || "host"}`,
+    };
+  }
+  // Archiv: 9GAG id → položka z feed.json (načtený jednou za běh isolate)
+  if (!archiveIndex) {
+    const response = await env.ASSETS.fetch(new Request(new URL("/feed.json", url)));
+    const items = response.ok ? (await response.json()).items || [] : [];
+    archiveIndex = new Map(items.map((item) => [item[1], item]));
+  }
+  const item = archiveIndex.get(id);
+  if (!item) return null;
+  const [index, , kind, ext] = item;
+  const extension = ext || (kind === "v" ? "mp4" : "jpg");
+  return {
+    bucket: env.MEDIA, key: `${MEDIA_PREFIX}${String(index).padStart(4, "0")}_${id}.${extension}`, kind,
+    type: kind === "v" ? "video/mp4" : `image/${extension === "jpg" ? "jpeg" : extension}`,
+    caption: "", author: "fakan", anchor: `p-${index}`, meta: "z archivu 9GAG",
+  };
+}
+
+function sharePage(url, post, status = 200) {
+  const headers = new Headers({
+    "content-type": "text/html; charset=utf-8",
+    "content-security-policy": PUBLIC_CSP,
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-content-type-options": "nosniff",
+    "x-robots-tag": "noindex",
+    "cache-control": "public, max-age=300",
+  });
+  const title = post ? (post.caption || "Meme z fakan.cz") : "Tenhle kousek tu už není";
+  const description = post
+    ? "Kousek z fakan.cz, osobního feedu Dana Hromady a lidí, které pustil dál."
+    : "Možná ho autor smazal.";
+  const media = post ? `${url.origin}/p/${post.id}/media` : "";
+  const og = post
+    ? post.kind === "v"
+      ? `<meta property="og:type" content="video.other">
+  <meta property="og:video" content="${media}">
+  <meta property="og:video:secure_url" content="${media}">
+  <meta property="og:video:type" content="${post.type}">
+  <meta name="twitter:card" content="player">`
+      : `<meta property="og:type" content="article">
+  <meta property="og:image" content="${media}">
+  <meta property="og:image:type" content="${post.type}">
+  <meta property="og:image:alt" content="${escapeHtml(title)}">
+  <meta name="twitter:card" content="summary_large_image">`
+    : "";
+  const figure = post
+    ? post.kind === "v"
+      ? `<video src="/p/${post.id}/media" controls playsinline loop muted autoplay preload="metadata"></video>`
+      : `<img src="/p/${post.id}/media" alt="${escapeHtml(title)}">`
+    : "";
+  const html = `<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>${escapeHtml(title)} · fakan</title>
+  <meta name="description" content="${escapeHtml(description)}">
+  <meta property="og:site_name" content="fakan.cz">
+  <meta property="og:title" content="${escapeHtml(title)}">
+  <meta property="og:description" content="${escapeHtml(description)}">
+  <meta property="og:url" content="${post ? `${url.origin}/p/${post.id}` : url.origin}">
+  <meta property="og:locale" content="cs_CZ">
+  ${og}
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    :root { color-scheme: light dark; --bg: #fff; --fg: #15151a; --muted: #6b6b73; --line: #e6e5df; --field: #d6d5ce;
+      --card: #f4f3ef; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #000; --fg: #f2f2f2; --muted: #9a9aa2; --line: #232327; --field: #34343a; --card: #141416; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--fg);
+      font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 600px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 0 40px; }
+    .head { display: flex; align-items: center; gap: 9px; padding: 0 16px 14px; font-size: 14px; }
+    .avatar { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--fg); color: var(--bg);
+      font: 700 13px/1 ui-monospace, Menlo, monospace; }
+    .head a { color: inherit; font-weight: 600; text-decoration: none; }
+    .muted { color: var(--muted); }
+    h1 { margin: 0; padding: 0 16px 12px; font-size: 19px; line-height: 1.3; overflow-wrap: anywhere; }
+    figure { margin: 0; background: #0d0d0f; }
+    img, video { display: block; width: 100%; height: auto; max-height: 80dvh; object-fit: contain; }
+    .invite { margin: 18px 16px 0; padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .invite p { margin: 0 0 14px; color: var(--muted); }
+    .invite b { color: var(--fg); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn { display: inline-flex; padding: 12px 18px; border-radius: 10px; background: var(--fg); color: var(--bg); font-weight: 600;
+      text-decoration: none; }
+    .btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--field); }
+    @media (min-width: 640px) { figure { border-radius: 12px; overflow: hidden; } .head, h1 { padding-left: 0; padding-right: 0; }
+      .invite { margin-left: 0; margin-right: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="head"><span class="avatar" aria-hidden="true">f</span><a href="/osobni">fakan</a>
+      <span class="muted">${post ? escapeHtml(post.meta) : ""}</span></header>
+    ${post?.caption ? `<h1>${escapeHtml(post.caption)}</h1>` : ""}
+    ${figure ? `<figure>${figure}</figure>` : ""}
+    <section class="invite">
+      <p><b>${post ? "Tohle je kousek z&nbsp;fakan.cz." : "Tenhle kousek tu už není."}</b> Je to můj osobní feed s&nbsp;memy
+        a&nbsp;příspěvky lidí, které jsem pustil dál. Dovnitř pouštím jen známé, stačí napsat.</p>
+      <div class="actions">
+        <a class="btn" href="/osobni">Chci víc</a>
+        ${post ? `<a class="btn ghost" href="/p/${post.id}/media" download>stáhnout</a>` : ""}
+      </div>
+    </section>
+  </main>
+</body>
+</html>`;
+  return new Response(html, { status, headers });
 }
 
 // ——— vlastní feed: příspěvky, hlasy, lidé ———
@@ -444,7 +601,8 @@ async function approvePage(request, env, url, id) {
         ? "<p>Hotovo, tohle zařízení je tvoje. Jestli máš fakan.cz/osobni otevřené, feed se během chvíle načte sám.</p>"
         : `<p>Hotovo, pustil jsi ho dál. Jestli má fakan.cz/osobni otevřené, feed se mu během chvíle načte sám.
            Jinak ho uvidí, až se vrátí ve stejném prohlížeči.</p>`;
-      return page(memberId === ADMIN_ID ? "Jsi uvnitř" : "Je vpuštěný", `${done}${remembered}<p class="muted">Žádost ${id}</p>`);
+      return page(memberId === ADMIN_ID ? "Jsi uvnitř" : "Je vpuštěný",
+        `${done}${remembered}<a class="go" href="/osobni">Do feedu</a><p class="muted">Žádost ${id}</p>`);
     }
   } else if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method Not Allowed", { status: 405, headers: { allow: "GET, POST" } });
@@ -455,7 +613,8 @@ async function approvePage(request, env, url, id) {
   ).bind(id).first();
   if (approved) {
     const who = approved.id === ADMIN_ID ? "tvoje zařízení" : escapeHtml(approved.name || "host");
-    return page("Už je vpuštěný", `<p>Tuhle žádost už máš vyřízenou: ${who}.</p><p class="muted">Žádost ${id}</p>`);
+    return page("Už je vpuštěný",
+      `<p>Tuhle žádost už máš vyřízenou: ${who}.</p><a class="go" href="/osobni">Do feedu</a><p class="muted">Žádost ${id}</p>`);
   }
   const people = (await env.DB.prepare("SELECT rowid AS num, id, name FROM members ORDER BY rowid").all()).results;
   const from = sender
@@ -516,7 +675,7 @@ async function adminPage(request, env, url) {
     return loginPage(next, "", '<p class="error" role="alert">Heslo nesedí.</p>', 403);
   }
   if (await isAdmin(readCookies(request), env)) {
-    return page("Jsi přihlášený", '<p>Na tomhle zařízení máš přístup. <a href="/osobni">Do feedu</a></p>');
+    return page("Jsi přihlášený", '<p>Na tomhle zařízení máš přístup.</p><a class="go" href="/osobni">Do feedu</a>');
   }
   return loginPage("/osobni");
 }
@@ -536,33 +695,46 @@ function page(title, body, status = 200, headers = new Headers()) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${title} · fakan</title>
   <style>
-    :root { color-scheme: dark; }
+    /* Světlé i tmavé podle systému, stejně jako osobní feed */
+    :root { color-scheme: light dark; --bg: #fff; --fg: #15151a; --muted: #6b6b73; --line: #e6e5df; --field: #d6d5ce;
+      --card: #f4f3ef; --accent: #2a018a; --picked: #ece8f8; --error: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #000; --fg: #f2f2f2; --muted: #9a9aa2; --line: #232327; --field: #34343a; --card: #0b0b0d;
+        --accent: #b899ff; --picked: #17132a; --error: #ff8f8f; }
+    }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 16px;
-      background: #000; color: #f2f2f2; font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
-    main { width: 100%; max-width: 440px; padding: 24px; border: 1px solid #232327; border-radius: 14px; background: #0b0b0d;
+      background: var(--bg); color: var(--fg); font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { width: 100%; max-width: 440px; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--card);
       overflow-wrap: anywhere; }
     h1 { margin: 0 0 12px; font-size: 22px; letter-spacing: -.01em; }
     p { margin: 0 0 14px; }
-    a { color: #b899ff; }
-    label { display: grid; gap: 6px; margin-bottom: 14px; font-size: 14px; color: #c9c9cf; }
-    input[type="text"], input[type="password"] { width: 100%; padding: 11px 12px; border: 1px solid #34343a; border-radius: 9px;
-      background: #000; color: inherit; font: inherit; }
+    a { color: var(--accent); }
+    label { display: grid; gap: 6px; margin-bottom: 14px; font-size: 14px; color: var(--muted); }
+    input[type="text"], input[type="password"] { width: 100%; padding: 11px 12px; border: 1px solid var(--field); border-radius: 9px;
+      background: var(--bg); color: var(--fg); font: inherit; }
     fieldset { margin: 0 0 16px; padding: 0; border: 0; }
-    legend { margin-bottom: 8px; padding: 0; font-size: 14px; color: #c9c9cf; }
-    .choice { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; padding: 13px 14px; border: 1px solid #34343a;
-      border-radius: 10px; color: #f2f2f2; font-size: 16px; cursor: pointer; }
-    .choice:has(input:checked) { border-color: #b899ff; background: #17132a; }
-    .choice input { width: 20px; height: 20px; margin: 0; accent-color: #b899ff; flex: none; }
-    button { width: 100%; padding: 12px 16px; border: 0; border-radius: 10px; background: #f2f2f2; color: #000;
+    legend { margin-bottom: 8px; padding: 0; font-size: 14px; color: var(--muted); }
+    .choice { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; padding: 13px 14px; border: 1px solid var(--field);
+      border-radius: 10px; color: var(--fg); font-size: 16px; cursor: pointer; }
+    .choice:has(input:checked) { border-color: var(--accent); background: var(--picked); }
+    .choice input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex: none; }
+    button { width: 100%; padding: 12px 16px; border: 0; border-radius: 10px; background: var(--fg); color: var(--bg);
       font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1; cursor: pointer; }
     form { margin: 0 0 14px; }
-    .muted { color: #9a9aa2; font-size: 13px; }
-    .error { color: #ff8f8f; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .error { color: var(--error); }
+    .home { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; color: var(--fg); font-weight: 600;
+      font-size: 14px; text-decoration: none; }
+    .home::before { content: "f"; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+      background: var(--fg); color: var(--bg); font: 700 12px/1 ui-monospace, Menlo, monospace; }
+    .go { display: block; margin: 4px 0 14px; padding: 12px 16px; border-radius: 10px; background: var(--fg); color: var(--bg);
+      font-weight: 600; text-align: center; text-decoration: none; }
   </style>
 </head>
 <body>
   <main>
+    <a class="home" href="/osobni">fakan</a>
     <h1>${title}</h1>
     ${body}
   </main>

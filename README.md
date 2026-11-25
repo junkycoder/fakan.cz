@@ -55,6 +55,10 @@ Jedna stránka s přepínačem **profesní / osobní** (`/` a `/osobni`), Worker
 - Taby jako na 9GAG: **Nejlepší** (příspěvky s aspoň 2 hlasy, `TOP_MIN` v `index.html`),
   **Všichni** a pak každý člověk zvlášť. Tlačítko **Přidat** dole nahrává fotky a videa,
   smazat může autor nebo já.
+- U každého příspěvku **stáhnout** (soubor) a **sdílet** (odkaz `fakan.cz/p/<id>` s OG náhledem
+  memu). Kdo nemá přístup, uvidí jen ten kousek a pozvánku dovnitř; vpuštěný skončí ve feedu.
+  Id je 9GAG id nebo náhodný klíč příspěvku, ne pořadové číslo, takže se přes `/p/` nedá projít feed.
+- Osobní část i stránky pro mě jsou světlé nebo tmavé podle systému.
 - Data: lidé, příspěvky a hlasy v D1 `fakan-feed` (schéma v `web/migrations/`), média nových
   příspěvků v R2 `fakan-feed`. Archiv 1 864 mých upvotů je v `web/public/feed.json`, média čte
   Worker z R2 `justpost-media` (`posts/imported/`), jen čtení.

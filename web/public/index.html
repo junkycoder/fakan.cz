@@ -38,15 +38,28 @@
         --accent: #b899ff;
       }
     }
-    /* Osobní režim je vždy tmavý, jako feed */
+    /* Osobní režim (feed) podle systému: světlý bílý, tmavý černý jako 9GAG.
+       Pozadí pod memy (.media) zůstává tmavé v obou. */
     html[data-mode="osobni"] {
-      color-scheme: dark;
-      --bg: #000;
-      --fg: #f2f2f2;
-      --muted: #9a9aa2;
-      --line: #232327;
-      --card: #141416;
-      --accent: #b899ff;
+      --bg: #ffffff;
+      --fg: #15151a;
+      --muted: #6b6b73;
+      --line: #e6e5df;
+      --card: #f4f3ef;
+      --accent: #2a018a;
+      --error: #b3261e;
+    }
+    @media (prefers-color-scheme: dark) {
+      html[data-mode="osobni"] {
+        --bg: #000;
+        --fg: #f2f2f2;
+        --muted: #9a9aa2;
+        --line: #232327;
+        --card: #141416;
+        --accent: #b899ff;
+        --error: #ff8f8f;
+        --shadow: 55;
+      }
     }
 
     * { box-sizing: border-box; }
@@ -400,7 +413,7 @@
     .post-who:hover { text-decoration: underline; }
     .post-caption { margin: 0; padding: 0 16px 12px; font: 600 17px/1.35 var(--sans); overflow-wrap: anywhere; }
     .post-actions .vote { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
-    .post-actions .vote[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #000; }
+    .post-actions .vote[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--bg); }
     .post-actions .post-delete { margin-left: auto; color: var(--muted); }
     .feed-empty { padding: 28px 16px; border-top: 1px solid var(--line); color: var(--muted); }
 
@@ -419,11 +432,11 @@
       border-radius: 999px;
       background: var(--fg);
       color: var(--bg);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, .55);
+      box-shadow: 0 10px 30px color-mix(in srgb, #000 calc(var(--shadow, 30) * 1%), transparent);
       font: 700 15px/1 var(--sans);
       cursor: pointer;
     }
-    .add:hover { background: #fff; }
+    .add:hover { background: color-mix(in srgb, var(--fg) 82%, var(--bg)); }
     .add:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     html[data-mode="pro"] .add { display: none; }
     .sheet {
@@ -452,7 +465,7 @@
     .sheet-preview { margin: 0 0 14px; border-radius: 10px; overflow: hidden; background: #0d0d0f; }
     .sheet-preview:empty { display: none; }
     .sheet-preview img, .sheet-preview video { display: block; width: 100%; max-height: 42dvh; object-fit: contain; }
-    .sheet-error { margin: 0 0 12px; color: #ff8f8f; font-size: 14px; }
+    .sheet-error { margin: 0 0 12px; color: var(--error); font-size: 14px; }
     .sheet progress { width: 100%; height: 6px; margin: 0 0 12px; accent-color: var(--accent); }
     .sheet-actions { display: flex; gap: 10px; }
     .sheet-actions button {
@@ -493,7 +506,7 @@
       font: 600 15px/1 var(--sans);
       text-decoration: none;
     }
-    .lock-btn:hover { background: #fff; }
+    .lock-btn:hover { background: color-mix(in srgb, var(--fg) 82%, var(--bg)); }
     .lock-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .lock-wait { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
     .lock-wait p:last-child { margin-bottom: 0; }
@@ -611,8 +624,8 @@
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2.5 12 9H2z" fill="currentColor"/></svg>
             <span class="vote-count">0</span>
           </button>
-          <a class="post-source" target="_blank" rel="noopener noreferrer">originál na 9GAG</a>
-          <button class="post-share" type="button">zkopírovat odkaz</button>
+          <a class="post-download" download>stáhnout</a>
+          <button class="post-share" type="button">sdílet</button>
           <button class="post-delete" type="button" hidden>smazat</button>
         </footer>
       </article>
@@ -647,9 +660,10 @@
     const views = { pro: document.getElementById("pro"), osobni: document.getElementById("osobni") };
     const switchLinks = document.querySelectorAll(".switch a[data-to]");
     const TITLES = { pro: "Dan Hromada · fakan.cz", osobni: "fakan · osobní" };
-    const THEME = { pro: null, osobni: "#000000" };
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    const lightTheme = themeMeta.content;
+    // Barva lišty prohlížeče = pozadí aktuálního režimu a schématu systému
+    const paintTheme = () => (themeMeta.content = getComputedStyle(root).getPropertyValue("--bg").trim());
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paintTheme);
 
     function modeFromPath() {
       return /^\/osobni\/?$/.test(location.pathname) ? "osobni" : "pro";
@@ -671,7 +685,7 @@
         else link.removeAttribute("aria-current");
       }
       document.title = TITLES[mode];
-      themeMeta.content = THEME[mode] ?? lightTheme;
+      paintTheme();
       if (mode === "osobni") loadFeed();
       else pauseAllVideos();
     }
@@ -852,7 +866,8 @@
         const ref = `n:${post.klic}`;
         const [count, mine] = voteOf(ref);
         return {
-          ref, anchor: `n-${post.klic.split(".")[0]}`, key: post.klic, kind: post.druh, src: `/n/${post.klic}`,
+          ref, anchor: `n-${post.klic.split(".")[0]}`, share: post.klic.split(".")[0], key: post.klic, kind: post.druh,
+          src: `/n/${post.klic}`, file: `fakan-${post.klic}`,
           author: post.autor, caption: post.popisek, time: post.kdy, own: post.muj, votes: count, voted: mine,
         };
       });
@@ -862,8 +877,9 @@
         const ref = `a:${index}`;
         const [count, mine] = voteOf(ref);
         return {
-          ref, anchor: `p-${index}`, num: index, gag: id, kind,
+          ref, anchor: `p-${index}`, num: index, gag: id, kind, share: id,
           src: `/m/${String(index).padStart(4, "0")}_${id}.${ext || (kind === "v" ? "mp4" : "jpg")}`,
+          file: `fakan-${index}.${ext || (kind === "v" ? "mp4" : "jpg")}`,
           author: dan, caption: "", time: null, own: false, votes: count, voted: mine,
         };
       });
@@ -989,9 +1005,10 @@
         caption.textContent = item.caption;
         caption.hidden = false;
       }
-      const source = post.querySelector(".post-source");
-      if (item.gag) source.href = `https://9gag.com/gag/${encodeURIComponent(item.gag)}`;
-      else source.remove();
+      // Meme se má šířit: stáhnout soubor a sdílet odkaz s náhledem (fakan.cz/p/…)
+      const download = post.querySelector(".post-download");
+      download.href = item.src;
+      download.download = item.file;
       post.querySelector(".post-share").addEventListener("click", (event) => sharePost(event.currentTarget, item));
       const voteButton = post.querySelector(".vote");
       paintVote(voteButton, item);
@@ -1112,16 +1129,26 @@
       if (turnOn) video.play().catch(() => {});
     }
 
+    // Sdílí se veřejná adresa kousku: aplikace z ní ukáže náhled s memem a kdo nemá
+    // přístup, uvidí jen tenhle kousek a pozvánku dovnitř. Bez sdílení v systému se odkaz zkopíruje.
     async function sharePost(button, item) {
-      const url = `${location.origin}/osobni#${item.anchor}`;
+      const url = `${location.origin}/p/${item.share}`;
+      const data = { title: item.caption || "fakan", url };
+      if (navigator.share && (!navigator.canShare || navigator.canShare(data))) {
+        try {
+          await navigator.share(data);
+          return;
+        } catch (error) {
+          if (error.name === "AbortError") return;
+        }
+      }
       try {
         await navigator.clipboard.writeText(url);
-        button.textContent = "zkopírováno";
+        button.textContent = "odkaz zkopírován";
       } catch {
-        history.replaceState(null, "", `#${item.anchor}`);
-        button.textContent = "odkaz je v adrese";
+        prompt("Odkaz na tenhle kousek:", url);
       }
-      setTimeout(() => (button.textContent = "zkopírovat odkaz"), 1800);
+      setTimeout(() => (button.textContent = "sdílet"), 1800);
     }
 
     function renderMore(upTo = rendered + BATCH) {
